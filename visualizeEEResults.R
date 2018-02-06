@@ -104,46 +104,6 @@ tidyBeforeAfter <- beforeAfter %>%
            | trendType == 'improvePercBef'
            | trendType == 'unknownPercBef') %>%
     separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
-  befAftPlot <- befAftPlot %>%  
-    mutate(trendInv = ifelse(epoch =="Aft",
-                             trendValue,
-                             trendValue*-1))
-  
-  ggplot(befAftPlot, aes(x = PARK_TYPE, y = trendInv,
-                         fill = factor(trend,
-                                       levels = c('declinePerc',
-                                                  'unknownPerc',
-                                                  'improvePerc'),
-                                       labels = c('Decline',
-                                                  'Unknown',
-                                                  'Improve'),
-                                       ordered = TRUE))) +
-    geom_bar(stat = "identity", position = "dodge", width = 0.7) +
-    geom_text(aes(x = PARK_TYPE, y = trendInv + (15*sign(trendInv)),
-                  label = format(abs(trendInv), digits=0)),
-              position = position_dodge(width=0.7),
-              size = 3, color = rgb(100,100,100, maxColorValue=255)) +
-    facet_wrap(~pairId, scale = "free_x") +
-    xlab("Protection Level\n") + ylab("\nArea (%)") +
-    scale_fill_brewer(palette="Spectral") +
-    coord_flip() + geom_hline(yintercept = 0) +
-    scale_y_continuous(limits = c(-120, 120),
-                       breaks = pretty(befAftPlot$trendInv),
-                       labels = abs(pretty(befAftPlot$trendInv))) +
-    theme_bw() +
-    labs(title = "Vegetation change BEFORE vs. AFTER Tiger Reserve establishment",
-         caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
-         fill = "Directional change") +
-    theme(strip.text.x = element_text(face = "plain", size = 10),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          axis.text.y = element_text(size = 14),
-          axis.title = element_text(size = 16))
-  ggsave("figs/02_BeforeVsAfterEst.eps", width = 9.5, height = 5.5, unit = 'in')
-}
-
-# ALTERNATIVE 1 "Before v/s After Established" ALTERNATIVE (Fig 2) -------------
-{
   topBarInGroup = 'Bef'
   bottomBarInGroup = 'Aft'
   ggplot(data=subset(befAftPlot, epoch == bottomBarInGroup),
@@ -184,83 +144,6 @@ tidyBeforeAfter <- beforeAfter %>%
           axis.text.y = element_text(size = 14),
           axis.title = element_text(size = 16))
   ggsave("figs/02a_BeforeVsAfterEst_best.eps", width = 9.5, height = 5.5, unit = 'in')
-}
-
-# ALTERNATIVE 1A "Before v/s After Established" ALTERNATIVE (Fig 2) ------------
-{
-  befAftPlotAlt <- tidyBeforeAfter %>%
-    filter(pairId != 'Tadoba-Andhari - Umred- Karhandla'
-           & pairId != 'Bor - Umred- Karhandla') %>%
-    filter(trendType == 'declinePercAft'
-           | trendType == 'improvePercAft'
-           | trendType == 'unknownPercAft'
-           | trendType == 'declinePercBef'
-           | trendType == 'improvePercBef'
-           | trendType == 'unknownPercBef') %>%
-    separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
-  
-  ggplot(befAftPlotAlt, aes(x = PARK_TYPE, y = trendValue,
-                            fill = factor(trend,
-                                          levels = c('declinePerc',
-                                                     'unknownPerc',
-                                                     'improvePerc'),
-                                          labels = c('Decline',
-                                                     'Unknown',
-                                                     'Improve'),
-                                          ordered = TRUE))) +
-    geom_bar(stat = "identity", position = "stack", width = 0.7) +
-    facet_grid(epoch~pairId , scale = "free_x") +
-    xlab("Protection Level") + ylab("Area (%)") +
-    scale_fill_brewer(palette="Spectral") +
-    coord_flip() + geom_hline(yintercept = 0) +
-    theme_bw() +
-    labs(title = "ALTERNATIVE 1A Vegetation change BEFORE vs. AFTER Tiger Reserve establishment",
-         caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
-         fill = "Directional change") +
-    theme(strip.text.x = element_text(face = "plain"),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank())
-  ggsave("figs/02b_BeforeVsAfterEst_Alt1A.eps")
-}
-
-# ALTERNATIVE 2 "Before v/s After Established" (Fig 2) -------------------------
-{
-  befAftPlot %>% filter(trend == 'declinePerc'
-                        | trend == 'improvePerc'
-                        # | trendType == 'unknownPercAft'
-                        | trend == 'declinePerc'
-                        | trend == 'improvePerc') %>%
-    # | trendType == 'unknownPercBef')
-    ggplot(aes(x = PARK_TYPE, y = trendInv,
-               fill = factor(trend,
-                             levels = c('declinePerc',
-                                        # 'unknownPerc',
-                                        'improvePerc'),
-                             labels = c('Decline',
-                                        # 'Unknown',
-                                        'Improve'),
-                             ordered = TRUE))) +
-    geom_bar(stat = "identity", position = "dodge", width = 0.7) +
-    geom_text(aes(x = PARK_TYPE, y = trendInv + (10*sign(trendInv)),
-                  label = format(abs(trendInv), digits=0)),
-              position = position_dodge(width=0.7),
-              size = 3, color = rgb(100,100,100, maxColorValue=255)) +
-    facet_wrap(~pairId, scale = "free_x") +
-    xlab("Protection Level") + ylab("Area (%)") +
-    # scale_fill_brewer(palette="Spectral") +
-    scale_fill_manual(values = c("#E69F00", "#009E73")) +
-    coord_flip() + geom_hline(yintercept = 0) +
-    scale_y_continuous(limits = c(-110, 110),
-                       breaks = pretty(befAftPlot$trendInv),
-                       labels = abs(pretty(befAftPlot$trendInv)))+
-    theme_bw() +
-    labs(title = "ALTERNATIVE 2 Vegetation change BEFORE vs. AFTER Tiger Reserve establishment",
-         caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
-         fill = "Directional change") +
-    theme(strip.text.x = element_text(face = "plain"),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank())
-  ggsave("figs/02c_BeforeVsAfterEst_Alt2.eps")
 }
 
 # "Helped v/s Harmed" (Fig 3) --------------------------------------------------
