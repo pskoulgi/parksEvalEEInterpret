@@ -7,6 +7,7 @@ after <- read.table("../data/VegTrendsAftEst_SummStats_FinalCutComp_PAsTRsNamesF
                     as.is = T, header = T, sep = ",")
 beforeAfter <- read.table("../data/VegTrendsBefAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_1d29517fe56d642688fd0e60c2fc3380.csv",
                           as.is = T, header = T, sep = ",")
+minValidDataPerc = 75
 
 # after <- read.table("../data/VegTrendsAftEst_SummStats_VegAreaOnly_412f62749a505abf77d0899469840d79.csv",
 #                     as.is = T, header = T, sep = ",")
@@ -28,7 +29,7 @@ trNonTRpairCodes <- after %>% filter(PARK_TYPE == "TR") %>%
 
 # tidy data for percentage plotting grouped and faceted
 tidyAfter <- after %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
-  filter(validDataPercAft > 50) %>%
+  filter(validDataPercAft > minValidDataPerc) %>%
   mutate(unknownPercAft = 100 - improvePercAft - declinePercAft) %>%
   gather(trendType, trendValue, c('declinePercAft', 'improvePercAft',
                                   'unknownPercAft',
@@ -37,7 +38,8 @@ tidyAfter <- after %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
   right_join(trNonTRpairCodes, by = "NAME")
 
 tidyBeforeAfter <- beforeAfter %>%
-  filter(validDataPercAft > 50 & validDataPercBef > 50) %>%
+  filter(validDataPercAft > minValidDataPerc &
+           validDataPercBef > minValidDataPerc) %>%
   mutate(unknownPercAft = 100 - improvePercAft - declinePercAft) %>%
   mutate(unknownPercBef = 100 - improvePercBef - declinePercBef) %>% 
   mutate(unknownPerc    = 100 - trEstHarmPerc  - trEstHelpPerc ) %>% 
