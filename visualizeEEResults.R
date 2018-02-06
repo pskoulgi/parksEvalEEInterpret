@@ -110,7 +110,7 @@ tidyBeforeAfter <- beforeAfter %>%
                                       'Ambiguous',
                                       'Improve'),
                            ordered = TRUE))) +
-    facet_wrap(~pairId, scale = "free_x") +
+    facet_wrap(~pairId) +
     geom_bar(aes(x=as.numeric(factor(PARK_TYPE))-0.2),
              stat = "identity", position = "stack", width = 0.3) +
     geom_text(aes(x = as.numeric(factor(PARK_TYPE))-0.2,
