@@ -69,7 +69,7 @@ tidyBeforeAfter <- beforeAfter %>%
                                                  'unknownPerc',
                                                  'improvePerc'),
                                       labels = c('Decline',
-                                                 'Unknown',
+                                                 'Ambiguous',
                                                  'Improve'),
                                       ordered = TRUE))) + 
     geom_bar(stat="identity", position = "stack", width=0.7) +
@@ -107,7 +107,7 @@ tidyBeforeAfter <- beforeAfter %>%
                                       'unknownPerc',
                                       'improvePerc'),
                            labels = c('Decline',
-                                      'Unknown',
+                                      'Ambiguous',
                                       'Improve'),
                            ordered = TRUE))) +
     facet_wrap(~pairId, scale = "free_x") +
@@ -137,10 +137,41 @@ tidyBeforeAfter <- beforeAfter %>%
           panel.grid.minor = element_blank(),
           axis.text.y = element_text(size = 14),
           axis.title = element_text(size = 16))
-  ggsave("figs/02a_BeforeVsAfterEst_best.eps", width = 9.5, height = 5.5, unit = 'in')
+  # ggsave("figs/02a_BeforeVsAfterEst_best.eps", width = 9.5, height = 5.5, unit = 'in')
 }
 
 # "Helped v/s Harmed" (Fig 3) --------------------------------------------------
+{
+  helpedHarmedPlot <- tidyBeforeAfter %>%
+    filter(trendType == 'trEstHarmPerc'
+           | trendType == 'trEstHelpPerc'
+           | trendType == 'unknownPerc')
+  ggplot(helpedHarmedPlot, aes(y = trendValue, x = PARK_TYPE,
+                        fill = factor(trendType,
+                                      levels = c('trEstHarmPerc',
+                                                 'unknownPerc',
+                                                 'trEstHelpPerc'),
+                                      labels = c('Harmed',
+                                                 'Ambiguous',
+                                                 'Helped'),
+                                      ordered = TRUE))) + 
+    geom_bar(stat="identity", position = "stack", width=0.7) +
+    facet_wrap(~factor(pairId), strip.position = "top") +
+    scale_fill_brewer(palette="Spectral") +
+    theme_bw() + coord_flip() +
+    labs(title = "Vegetation change: HELPED vs. HARMED by Tiger Reserve establishment",
+         caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
+         fill = "Effect of\nTR establishment") +
+    xlab("Protection Level\n") + ylab("\nArea (%)") +
+    theme(strip.text.x = element_text(face = "plain", size = 10),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.text.y = element_text(size = 14),
+          axis.title = element_text(size = 16))
+  # ggsave("figs/03_HelpedVsHarmed.eps", width = 9.5, height = 5.5, unit = 'in')
+}
+
+# "Helped v/s Harmed" (Fig 3) ALT 1---------------------------------------------
 {
   tidyBeforeAfter %>%
     filter(trendType == 'trEstHarmPerc'
