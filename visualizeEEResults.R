@@ -59,10 +59,6 @@ tidyBeforeAfter <- beforeAfter %>%
 # "After Established" (Table/Fig 1) --------------------------------------------
 {
   afterPlot <- tidyAfter %>%
-    filter(pairId != 'Bhadra - Shettihalli'
-           & pairId != 'Nagarhole - Shettihalli'
-           & pairId != 'Tadoba-Andhari - Umred- Karhandla'
-           & pairId != 'Bor - Umred- Karhandla') %>%
     filter(trendType == 'declinePercAft'
            | trendType == 'improvePercAft'
            | trendType == 'unknownPercAft') %>%
@@ -95,8 +91,6 @@ tidyBeforeAfter <- beforeAfter %>%
 # "Before v/s After Established" (Fig 2) ---------------------------------------
 {
   befAftPlot <- tidyBeforeAfter %>%
-    filter(pairId != 'Tadoba-Andhari - Umred- Karhandla'
-           & pairId != 'Bor - Umred- Karhandla') %>%
     filter(trendType == 'declinePercAft'
            | trendType == 'improvePercAft'
            | trendType == 'unknownPercAft'
@@ -149,8 +143,6 @@ tidyBeforeAfter <- beforeAfter %>%
 # "Helped v/s Harmed" (Fig 3) --------------------------------------------------
 {
   tidyBeforeAfter %>%
-    filter(pairId != 'Tadoba-Andhari - Umred- Karhandla'
-           & pairId != 'Bor - Umred- Karhandla') %>%
     filter(trendType == 'trEstHarmPerc'
            | trendType == 'trEstHelpPerc') %>%
     ggplot(aes(x = PARK_TYPE, y = trendValue,
