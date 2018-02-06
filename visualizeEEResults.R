@@ -73,9 +73,10 @@ tidyBeforeAfter <- beforeAfter %>%
                                                  'Improve'),
                                       ordered = TRUE))) + 
     geom_bar(stat="identity", position = "stack", width=0.6) +
-    facet_wrap(~factor(pairId), nrow = 7, ncol = 4, strip.position = "top") +
+    facet_wrap(~factor(pairId)+TR_EST, labeller = label_value, 
+               nrow = 7, ncol = 4) +
     scale_fill_brewer(palette="Spectral") +
-    theme_bw() + coord_flip() +
+    theme_light() + coord_flip() +
     labs(title = "Vegetation change AFTER Tiger Reserve establishment",
          caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
          fill = "Directional change") +
@@ -110,7 +111,7 @@ tidyBeforeAfter <- beforeAfter %>%
                                       'Ambiguous',
                                       'Improve'),
                            ordered = TRUE))) +
-    facet_wrap(~pairId) +
+    facet_wrap(~factor(pairId)+TR_EST, labeller = label_value) +
     geom_bar(aes(x=as.numeric(factor(PARK_TYPE))-0.2),
              stat = "identity", position = "stack", width = 0.3) +
     geom_text(aes(x = as.numeric(factor(PARK_TYPE))-0.2,
@@ -122,7 +123,7 @@ tidyBeforeAfter <- beforeAfter %>%
     geom_text(aes(x = as.numeric(factor(PARK_TYPE))+0.2,
                   y = -10, label = topBarInGroup, hjust=0.25),
               size = 3, color = rgb(100,100,100, maxColorValue=255)) +
-    coord_flip() + theme_bw() + scale_fill_brewer(palette="Spectral") +
+    coord_flip() + theme_light() + scale_fill_brewer(palette="Spectral") +
     labs(title = "Vegetation change BEFORE vs. AFTER Tiger Reserve establishment",
          caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
          fill = "Directional change") +
@@ -156,9 +157,9 @@ tidyBeforeAfter <- beforeAfter %>%
                                                  'Helped'),
                                       ordered = TRUE))) + 
     geom_bar(stat="identity", position = "stack", width=0.6) +
-    facet_wrap(~factor(pairId), strip.position = "top") +
+    facet_wrap(~factor(pairId)+TR_EST, labeller = label_value) +
     scale_fill_brewer(palette="Spectral") +
-    theme_bw() + coord_flip() +
+    theme_light() + coord_flip() +
     labs(title = "Vegetation change: HELPED vs. HARMED by Tiger Reserve establishment",
          caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
          fill = "Effect of\nTR establishment") +
@@ -189,7 +190,7 @@ tidyBeforeAfter <- beforeAfter %>%
                   label = format(trendValue, digits=0)),
               position = position_dodge(width=0.7),
               size = 4, color = rgb(100,100,100, maxColorValue=255)) +
-    facet_wrap(~pairId, scale = "free_x") +
+    facet_wrap(~factor(pairId)+TR_EST, labeller = label_value, scale = "free_x") +
     xlab("Protection Level\n") + ylab("\nArea (%)") +
     scale_fill_manual(values = c("#E69F00", "#009E73")) +
     # scale_fill_brewer(palette="Spectral") +
@@ -197,7 +198,7 @@ tidyBeforeAfter <- beforeAfter %>%
     scale_y_continuous(limits = c(0, 50),
                        breaks = c(0, 25, 50),
                        labels = c(0, 25, 50)) +
-    theme_bw() +
+    theme_light() +
     labs(title = "Vegetation change: HELPED vs. HARMED by Tiger Reserve establishment",
          caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
          fill = "Effect of\nTR establishment") +
