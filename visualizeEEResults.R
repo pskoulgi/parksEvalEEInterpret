@@ -85,7 +85,7 @@ tidyBeforeAfter <- beforeAfter %>%
           panel.grid.minor = element_blank(),
           axis.text.y = element_text(size = 14),
           axis.title = element_text(size = 16))
-  ggsave("figs/01_AfterEst.eps", width = 9, height = 11, unit = 'in')
+  # ggsave("figs/01_AfterEst.eps", width = 9, height = 11, unit = 'in')
 }
 
 # "Before v/s After Established" (Fig 2) ---------------------------------------
@@ -206,5 +206,5 @@ tidyBeforeAfter <- beforeAfter %>%
           panel.grid.minor = element_blank(),
           axis.text.y = element_text(size = 14),
           axis.title = element_text(size = 16))
-  ggsave("figs/03_HelpedVsHarmed.eps", width = 9.5, height = 5.5, unit = 'in')
+  # ggsave("figs/03_HelpedVsHarmed_alt1.eps", width = 9.5, height = 5.5, unit = 'in')
 }
