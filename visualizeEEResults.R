@@ -3,18 +3,23 @@ library(tidyr)
 library(ggplot2)
 
 # Data import & wrangling -----------------------------------------------------
-after <- read.table("../data/VegTrendsAftEst_SummStats_VegAreaOnly_412f62749a505abf77d0899469840d79.csv",
+after <- read.table("../data/VegTrendsAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_ffe94bd0702acb43d191ddc87bab10ad.csv",
                     as.is = T, header = T, sep = ",")
-beforeAfter <- read.table("../data/VegTrendsBefAftEst_SummStats_VegAreaOnly_2361bdde9abf9fb8b623cb79de810c2f.csv",
+beforeAfter <- read.table("../data/VegTrendsBefAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_1d29517fe56d642688fd0e60c2fc3380.csv",
                           as.is = T, header = T, sep = ",")
 
-# fix protection label for non-TRs
-after[which(after[,"PROTECTION"] != "TR"), "PROTECTION"] = "NonTR"
-beforeAfter[which(beforeAfter[,"PROTECTION"] != "TR"), "PROTECTION"] = "NonTR"
+# after <- read.table("../data/VegTrendsAftEst_SummStats_VegAreaOnly_412f62749a505abf77d0899469840d79.csv",
+#                     as.is = T, header = T, sep = ",")
+# beforeAfter <- read.table("../data/VegTrendsBefAftEst_SummStats_VegAreaOnly_2361bdde9abf9fb8b623cb79de810c2f.csv",
+#                           as.is = T, header = T, sep = ",")
 
-# generate ids for TR-NonTR pairs -- for grouping.
-# pair id factor labels are "TRName - NonTRName"
-trNonTRpairCodes <- after %>% filter(PROTECTION == "TR") %>%
+# fix protection label for non-TRs
+after[which(after[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
+beforeAfter[which(beforeAfter[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
+
+# generate ids for TR-Non-TR pairs -- for grouping.
+# pair id factor labels are "TRName - Non-TRName"
+trNonTRpairCodes <- after %>% filter(PARK_TYPE == "TR") %>%
   select(c('NAME', 'trNonTRPair')) %>%
   mutate(pairId = paste(NAME, trNonTRPair, sep = " - ")) %>%
   # rearrange so each each park <-> id coupling is there
@@ -22,13 +27,13 @@ trNonTRpairCodes <- after %>% filter(PROTECTION == "TR") %>%
   select(-pairType)
 
 # tidy data for percentage plotting grouped and faceted
-tidyAfter <- after %>% #select(-declineAft, -improveAft, -State_1) %>%
+tidyAfter <- after %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
   filter(validDataPercAft > 50) %>%
   mutate(unknownPercAft = 100 - improvePercAft - declinePercAft) %>%
   gather(trendType, trendValue, c('declinePercAft', 'improvePercAft',
                                   'unknownPercAft',
-                                  'declineAft', 'improveAft',
-                                  'validDataMask', 'validDataPercAft')) %>%
+                                  'declineAft_sqm', 'improveAft_sqm',
+                                  'validDataAft_sqm', 'validDataPercAft')) %>%
   right_join(trNonTRpairCodes, by = "NAME")
 
 tidyBeforeAfter <- beforeAfter %>%
@@ -38,14 +43,14 @@ tidyBeforeAfter <- beforeAfter %>%
   mutate(unknownPerc    = 100 - trEstHarmPerc  - trEstHelpPerc ) %>% 
   gather(trendType, trendValue, c('declinePercAft', 'improvePercAft',
                                   'unknownPercAft',
-                                  'declineAft', 'improveAft',
-                                  'validDataMaskAft', 'validDataPercAft',
+                                  'declineAft_sqm', 'improveAft_sqm',
+                                  'validDataAft_sqm', 'validDataPercAft',
                                   'declinePercBef', 'improvePercBef',
                                   'unknownPercBef',
-                                  'declineBef', 'improveBef',
-                                  'validDataMaskBef', 'validDataPercBef',
-                                  'trEstHarmed', 'trEstHarmPerc',
-                                  'trEstHelped', 'trEstHelpPerc',
+                                  'declineBef_sqm', 'improveBef_sqm',
+                                  'validDataBef_sqm', 'validDataPercBef',
+                                  'trEstHarmed_sqm', 'trEstHarmPerc',
+                                  'trEstHelped_sqm', 'trEstHelpPerc',
                                   'unknownPerc')) %>%
   right_join(trNonTRpairCodes, . , by = "NAME")
 
@@ -60,7 +65,7 @@ tidyBeforeAfter <- beforeAfter %>%
            | trendType == 'improvePercAft'
            | trendType == 'unknownPercAft') %>%
     separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
-  ggplot(afterPlot, aes(y = trendValue, x = PROTECTION,
+  ggplot(afterPlot, aes(y = trendValue, x = PARK_TYPE,
                         fill = factor(trend,
                                       levels = c('declinePerc',
                                                  'unknownPerc',
@@ -102,7 +107,7 @@ tidyBeforeAfter <- beforeAfter %>%
                              trendValue,
                              trendValue*-1))
   
-  ggplot(befAftPlot, aes(x = PROTECTION, y = trendInv,
+  ggplot(befAftPlot, aes(x = PARK_TYPE, y = trendInv,
                          fill = factor(trend,
                                        levels = c('declinePerc',
                                                   'unknownPerc',
@@ -112,7 +117,7 @@ tidyBeforeAfter <- beforeAfter %>%
                                                   'Improve'),
                                        ordered = TRUE))) +
     geom_bar(stat = "identity", position = "dodge", width = 0.7) +
-    geom_text(aes(x = PROTECTION, y = trendInv + (15*sign(trendInv)),
+    geom_text(aes(x = PARK_TYPE, y = trendInv + (15*sign(trendInv)),
                   label = format(abs(trendInv), digits=0)),
               position = position_dodge(width=0.7),
               size = 3, color = rgb(100,100,100, maxColorValue=255)) +
@@ -140,7 +145,7 @@ tidyBeforeAfter <- beforeAfter %>%
   topBarInGroup = 'Bef'
   bottomBarInGroup = 'Aft'
   ggplot(data=subset(befAftPlot, epoch == bottomBarInGroup),
-         aes(x=PROTECTION, y = trendValue,
+         aes(x=PARK_TYPE, y = trendValue,
              fill = factor(trend,
                            levels = c('declinePerc',
                                       'unknownPerc',
@@ -150,15 +155,15 @@ tidyBeforeAfter <- beforeAfter %>%
                                       'Improve'),
                            ordered = TRUE))) +
     facet_wrap(~pairId, scale = "free_x") +
-    geom_bar(aes(x=as.numeric(factor(PROTECTION))-0.2),
+    geom_bar(aes(x=as.numeric(factor(PARK_TYPE))-0.2),
              stat = "identity", position = "stack", width = 0.3) +
-    geom_text(aes(x = as.numeric(factor(PROTECTION))-0.2,
+    geom_text(aes(x = as.numeric(factor(PARK_TYPE))-0.2,
                   y = -10, label = bottomBarInGroup),
               size = 3, color = rgb(100,100,100, maxColorValue=255)) +
     geom_bar(data=subset(befAftPlot, epoch == topBarInGroup),
-             aes(x=as.numeric(factor(PROTECTION))+0.2),
+             aes(x=as.numeric(factor(PARK_TYPE))+0.2),
              stat = "identity", position = "stack", width = 0.3) +
-    geom_text(aes(x = as.numeric(factor(PROTECTION))+0.2,
+    geom_text(aes(x = as.numeric(factor(PARK_TYPE))+0.2,
                   y = -10, label = topBarInGroup),
               size = 3, color = rgb(100,100,100, maxColorValue=255)) +
     coord_flip() + theme_bw() + scale_fill_brewer(palette="Spectral") +
@@ -167,8 +172,8 @@ tidyBeforeAfter <- beforeAfter %>%
          fill = "Directional change") +
     xlab("Protection Level\n") + ylab("\nArea (%)") +
     scale_x_continuous(
-      breaks = as.numeric(sort(unique(factor(befAftPlot$PROTECTION)))),
-      labels = levels(factor(befAftPlot$PROTECTION))) +
+      breaks = as.numeric(sort(unique(factor(befAftPlot$PARK_TYPE)))),
+      labels = levels(factor(befAftPlot$PARK_TYPE))) +
     scale_y_continuous(breaks = pretty(befAftPlot$trendValue),
                        labels = (pretty(befAftPlot$trendValue))) +
     theme(strip.text.x = element_text(face = "plain", size = 10),
@@ -192,7 +197,7 @@ tidyBeforeAfter <- beforeAfter %>%
            | trendType == 'unknownPercBef') %>%
     separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
   
-  ggplot(befAftPlotAlt, aes(x = PROTECTION, y = trendValue,
+  ggplot(befAftPlotAlt, aes(x = PARK_TYPE, y = trendValue,
                             fill = factor(trend,
                                           levels = c('declinePerc',
                                                      'unknownPerc',
@@ -224,7 +229,7 @@ tidyBeforeAfter <- beforeAfter %>%
                         | trend == 'declinePerc'
                         | trend == 'improvePerc') %>%
     # | trendType == 'unknownPercBef')
-    ggplot(aes(x = PROTECTION, y = trendInv,
+    ggplot(aes(x = PARK_TYPE, y = trendInv,
                fill = factor(trend,
                              levels = c('declinePerc',
                                         # 'unknownPerc',
@@ -234,7 +239,7 @@ tidyBeforeAfter <- beforeAfter %>%
                                         'Improve'),
                              ordered = TRUE))) +
     geom_bar(stat = "identity", position = "dodge", width = 0.7) +
-    geom_text(aes(x = PROTECTION, y = trendInv + (10*sign(trendInv)),
+    geom_text(aes(x = PARK_TYPE, y = trendInv + (10*sign(trendInv)),
                   label = format(abs(trendInv), digits=0)),
               position = position_dodge(width=0.7),
               size = 3, color = rgb(100,100,100, maxColorValue=255)) +
@@ -263,7 +268,7 @@ tidyBeforeAfter <- beforeAfter %>%
            & pairId != 'Bor - Umred- Karhandla') %>%
     filter(trendType == 'trEstHarmPerc'
            | trendType == 'trEstHelpPerc') %>%
-    ggplot(aes(x = PROTECTION, y = trendValue,
+    ggplot(aes(x = PARK_TYPE, y = trendValue,
                fill = factor(trendType,
                              levels = c('trEstHarmPerc',
                                         # 'unknownPerc',
@@ -272,7 +277,7 @@ tidyBeforeAfter <- beforeAfter %>%
                                         # 'Unknown',
                                         'Helped')))) +
     geom_bar(stat = "identity", position = "dodge", width = 0.7) +
-    geom_text(aes(x = PROTECTION, y = trendValue + 5,
+    geom_text(aes(x = PARK_TYPE, y = trendValue + 5,
                   label = format(trendValue, digits=0)),
               position = position_dodge(width=0.7),
               size = 4, color = rgb(100,100,100, maxColorValue=255)) +
