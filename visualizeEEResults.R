@@ -72,7 +72,7 @@ tidyBeforeAfter <- beforeAfter %>%
                                                  'Ambiguous',
                                                  'Improve'),
                                       ordered = TRUE))) + 
-    geom_bar(stat="identity", position = "stack", width=0.7) +
+    geom_bar(stat="identity", position = "stack", width=0.6) +
     facet_wrap(~factor(pairId), nrow = 7, ncol = 4, strip.position = "top") +
     scale_fill_brewer(palette="Spectral") +
     theme_bw() + coord_flip() +
@@ -114,13 +114,13 @@ tidyBeforeAfter <- beforeAfter %>%
     geom_bar(aes(x=as.numeric(factor(PARK_TYPE))-0.2),
              stat = "identity", position = "stack", width = 0.3) +
     geom_text(aes(x = as.numeric(factor(PARK_TYPE))-0.2,
-                  y = -10, label = bottomBarInGroup),
+                  y = -10, label = bottomBarInGroup, hjust=0.25),
               size = 3, color = rgb(100,100,100, maxColorValue=255)) +
     geom_bar(data=subset(befAftPlot, epoch == topBarInGroup),
              aes(x=as.numeric(factor(PARK_TYPE))+0.2),
              stat = "identity", position = "stack", width = 0.3) +
     geom_text(aes(x = as.numeric(factor(PARK_TYPE))+0.2,
-                  y = -10, label = topBarInGroup),
+                  y = -10, label = topBarInGroup, hjust=0.25),
               size = 3, color = rgb(100,100,100, maxColorValue=255)) +
     coord_flip() + theme_bw() + scale_fill_brewer(palette="Spectral") +
     labs(title = "Vegetation change BEFORE vs. AFTER Tiger Reserve establishment",
@@ -155,7 +155,7 @@ tidyBeforeAfter <- beforeAfter %>%
                                                  'Ambiguous',
                                                  'Helped'),
                                       ordered = TRUE))) + 
-    geom_bar(stat="identity", position = "stack", width=0.7) +
+    geom_bar(stat="identity", position = "stack", width=0.6) +
     facet_wrap(~factor(pairId), strip.position = "top") +
     scale_fill_brewer(palette="Spectral") +
     theme_bw() + coord_flip() +
