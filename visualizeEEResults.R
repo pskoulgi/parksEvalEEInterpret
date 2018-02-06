@@ -81,7 +81,7 @@ tidyBeforeAfter <- beforeAfter %>%
          caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
          fill = "Directional change") +
     xlab("Protection Level\n") + ylab("\nArea (%)") +
-    theme(strip.text.x = element_text(face = "plain", size = 10),
+    theme(strip.text.x = element_text(face = "plain", size = 10, colour = "black"),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           axis.text.y = element_text(size = 14),
@@ -133,12 +133,12 @@ tidyBeforeAfter <- beforeAfter %>%
       labels = levels(factor(befAftPlot$PARK_TYPE))) +
     scale_y_continuous(breaks = pretty(befAftPlot$trendValue),
                        labels = (pretty(befAftPlot$trendValue))) +
-    theme(strip.text.x = element_text(face = "plain", size = 10),
+    theme(strip.text.x = element_text(face = "plain", size = 10, colour = "black"),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           axis.text.y = element_text(size = 14),
           axis.title = element_text(size = 16))
-  # ggsave("figs/02a_BeforeVsAfterEst_best.eps", width = 9.5, height = 5.5, unit = 'in')
+  # ggsave("figs/02a_BeforeVsAfterEst_best.eps", width = 9.5, height = 6.5, unit = 'in')
 }
 
 # "Helped v/s Harmed" (Fig 3) --------------------------------------------------
@@ -164,12 +164,12 @@ tidyBeforeAfter <- beforeAfter %>%
          caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
          fill = "Effect of\nTR establishment") +
     xlab("Protection Level\n") + ylab("\nArea (%)") +
-    theme(strip.text.x = element_text(face = "plain", size = 10),
+    theme(strip.text.x = element_text(face = "plain", size = 10, colour = "black"),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           axis.text.y = element_text(size = 14),
           axis.title = element_text(size = 16))
-  # ggsave("figs/03_HelpedVsHarmed.eps", width = 9.5, height = 5.5, unit = 'in')
+  # ggsave("figs/03_HelpedVsHarmed.eps", width = 9.5, height = 6.5, unit = 'in')
 }
 
 # "Helped v/s Harmed" (Fig 3) ALT 1---------------------------------------------
@@ -202,10 +202,10 @@ tidyBeforeAfter <- beforeAfter %>%
     labs(title = "Vegetation change: HELPED vs. HARMED by Tiger Reserve establishment",
          caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
          fill = "Effect of\nTR establishment") +
-    theme(strip.text.x = element_text(face = "plain", size = 10),
+    theme(strip.text.x = element_text(face = "plain", size = 10, colour = "black"),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           axis.text.y = element_text(size = 14),
           axis.title = element_text(size = 16))
-  # ggsave("figs/03_HelpedVsHarmed_alt1.eps", width = 9.5, height = 5.5, unit = 'in')
+  # ggsave("figs/03_HelpedVsHarmed_alt1.eps", width = 9.5, height = 6.5, unit = 'in')
 }
