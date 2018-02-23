@@ -14,6 +14,17 @@ minValidDataPerc = 80
 # beforeAfter <- read.table("../data/VegTrendsBefAftEst_SummStats_VegAreaOnly_2361bdde9abf9fb8b623cb79de810c2f.csv",
 #                           as.is = T, header = T, sep = ",")
 
+states = c('Uttar Pradesh', 'Uttarakhand', 'Rajasthan', 'Maharashtra',
+           'Madhya Pradesh',
+           'Bihar', 'Chattisgarh', 'Orissa', 'Andhra Pradesh', 'Jharkhand',
+           'Karnataka', 'Kerala', 'Tamil Nadu', 
+           'Arunachal Pradesh', 'Assam', 'Mizoram', 'West Bengal');
+clusterNum = c('Cluster I', 'Cluster I', 'Cluster I', 'Cluster I',
+           'Cluster II',
+           'Cluster III', 'Cluster III', 'Cluster III', 'Cluster III', 'Cluster III',
+           'Cluster IV', 'Cluster IV', 'Cluster IV',
+           'Cluster V', 'Cluster V', 'Cluster V', 'Cluster V')
+landscapeClus = data.frame(state = states, cluster = factor(clusterNum))
 # fix protection label for non-TRs
 after[which(after[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
 beforeAfter[which(beforeAfter[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
@@ -35,7 +46,8 @@ tidyAfter <- after %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
                                   'unknownPercAft',
                                   'declineAft_sqm', 'improveAft_sqm',
                                   'validDataAft_sqm', 'validDataPercAft')) %>%
-  right_join(trNonTRpairCodes, by = "NAME")
+  right_join(trNonTRpairCodes, by = "NAME") %>%
+  right_join(landscapeClus, by = c("STATE" = "state"))
 
 tidyBeforeAfter <- beforeAfter %>%
   filter(validDataPercAft > minValidDataPerc &
@@ -54,7 +66,8 @@ tidyBeforeAfter <- beforeAfter %>%
                                   'trEstHarmed_sqm', 'trEstHarmPerc',
                                   'trEstHelped_sqm', 'trEstHelpPerc',
                                   'unknownPerc')) %>%
-  right_join(trNonTRpairCodes, . , by = "NAME")
+  right_join(trNonTRpairCodes, . , by = "NAME") %>%
+  right_join(landscapeClus, by = c("STATE" = "state"))
 
 # "After Established" (Table/Fig 1) --------------------------------------------
 {
