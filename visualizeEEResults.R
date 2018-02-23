@@ -22,7 +22,7 @@ beforeAfter[which(beforeAfter[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
 # pair id factor labels are "TRName - Non-TRName"
 trNonTRpairCodes <- after %>% filter(PARK_TYPE == "TR") %>%
   select(c('NAME', 'trNonTRPair')) %>%
-  mutate(pairId = paste(NAME, trNonTRPair, sep = " - ")) %>%
+  mutate(pairId = paste(NAME, trNonTRPair, sep = " :: ")) %>%
   # rearrange so each each park <-> id coupling is there
   gather(key = pairType, value = NAME, -pairId) %>% 
   select(-pairType)
