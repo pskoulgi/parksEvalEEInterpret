@@ -85,18 +85,51 @@ tidyBeforeAfter <- beforeAfter %>%
                                                  'Ambiguous',
                                                  'Improve'),
                                       ordered = TRUE))) + 
-    geom_bar(stat="identity", position = "stack", width=0.6) +
-    facet_wrap(~factor(pairId)+TR_EST, labeller = label_value, 
-               nrow = 7, ncol = 4) +
-    scale_fill_brewer(palette="Spectral") +
+    geom_bar(stat = "identity", position = "stack", width = 0.6) +
+    facet_grid(cluster+pairId ~ ., scales = "free", space = "free") +
+    scale_fill_brewer(palette = "Spectral", type = 'qual') +
+    theme_light() + coord_flip() +
+    labs(fill = "Directional change", x = "", y = "Area (%)") +
+    theme(strip.text.y = element_text(face = "plain", size = 14, 
+                                      colour = "black", angle = 0, hjust = 0),
+          strip.background = element_rect(fill = "white", color = "grey"),
+          panel.grid.minor = element_blank(),
+          axis.text.y = element_text(size = 12),
+          axis.title = element_text(size = 16),
+          legend.position = "top")
+  # ggsave("figs/01_AfterEst.eps", width = 9, height = 11, unit = 'in')
+}
+
+# "After Established" (Table/Fig 1) --------------------------------------------
+{
+  afterPlot <- tidyAfter %>%
+    filter(trendType == 'declinePercAft'
+           | trendType == 'improvePercAft'
+           | trendType == 'unknownPercAft') %>%
+    separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
+  ggplot(afterPlot, aes(y = trendValue, x = pairId,
+                        color = factor(trend,
+                                      levels = c('declinePerc',
+                                                 'unknownPerc',
+                                                 'improvePerc'),
+                                      labels = c('Decline',
+                                                 'Ambiguous',
+                                                 'Improve'),
+                                      ordered = TRUE)
+                        )) + 
+    geom_point(aes(shape = factor(PARK_TYPE)), size = 3,
+               stat = "identity", position = "dodge") +
+    geom_line(linetype = 2) +
+    scale_color_manual(values = c("#fc8d59", "#bdbdbd", "#99d594")) +
     theme_light() + coord_flip() +
     labs(title = "Vegetation change AFTER Tiger Reserve establishment",
          caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
-         fill = "Directional change") +
+         color = "Directional change",
+         shape = "Protection") +
     xlab("Protection Level\n") + ylab("\nArea (%)") +
     theme(strip.text.x = element_text(face = "plain", size = 10, colour = "black"),
-          panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
+          panel.grid.major.y = element_blank(),
           axis.text.y = element_text(size = 14),
           axis.title = element_text(size = 16))
   # ggsave("figs/01_AfterEst.eps", width = 9, height = 11, unit = 'in')
@@ -114,8 +147,8 @@ tidyBeforeAfter <- beforeAfter %>%
     separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
   topBarInGroup = 'Bef'
   bottomBarInGroup = 'Aft'
-  ggplot(data=subset(befAftPlot, epoch == bottomBarInGroup),
-         aes(x=PARK_TYPE, y = trendValue,
+  ggplot(data = subset(befAftPlot, epoch == bottomBarInGroup),
+         aes(x = PARK_TYPE, y = trendValue,
              fill = factor(trend,
                            levels = c('declinePerc',
                                       'unknownPerc',
@@ -124,33 +157,31 @@ tidyBeforeAfter <- beforeAfter %>%
                                       'Ambiguous',
                                       'Improve'),
                            ordered = TRUE))) +
-    facet_wrap(~factor(pairId)+TR_EST, labeller = label_value) +
-    geom_bar(aes(x=as.numeric(factor(PARK_TYPE))-0.2),
+    facet_grid(cluster+pairId ~ ., labeller = label_value) +
+    geom_bar(aes(x = as.numeric(factor(PARK_TYPE)) - 0.2),
              stat = "identity", position = "stack", width = 0.3) +
-    geom_text(aes(x = as.numeric(factor(PARK_TYPE))-0.2,
-                  y = -10, label = bottomBarInGroup, hjust=0.25),
-              size = 3, color = rgb(100,100,100, maxColorValue=255)) +
-    geom_bar(data=subset(befAftPlot, epoch == topBarInGroup),
-             aes(x=as.numeric(factor(PARK_TYPE))+0.2),
+    geom_text(aes(x = as.numeric(factor(PARK_TYPE)) - 0.2,
+                  y = -10, label = bottomBarInGroup, hjust = 0.25),
+              size = 3, color = rgb(100,100,100, maxColorValue = 255)) +
+    geom_bar(data = subset(befAftPlot, epoch == topBarInGroup),
+             aes(x = as.numeric(factor(PARK_TYPE)) + 0.2),
              stat = "identity", position = "stack", width = 0.3) +
-    geom_text(aes(x = as.numeric(factor(PARK_TYPE))+0.2,
-                  y = -10, label = topBarInGroup, hjust=0.25),
-              size = 3, color = rgb(100,100,100, maxColorValue=255)) +
-    coord_flip() + theme_light() + scale_fill_brewer(palette="Spectral") +
-    labs(title = "Vegetation change BEFORE vs. AFTER Tiger Reserve establishment",
-         caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
-         fill = "Directional change") +
-    xlab("Protection Level\n") + ylab("\nArea (%)") +
+    geom_text(aes(x = as.numeric(factor(PARK_TYPE)) + 0.2,
+                  y = -10, label = topBarInGroup, hjust = 0.25),
+              size = 3, color = rgb(100,100,100, maxColorValue = 255)) +
+    coord_flip() + theme_light() + scale_fill_brewer(palette = "Spectral") +
+    labs(fill = "Directional change",
+         y = "Area (%)", x = "") +
     scale_x_continuous(
       breaks = as.numeric(sort(unique(factor(befAftPlot$PARK_TYPE)))),
       labels = levels(factor(befAftPlot$PARK_TYPE))) +
-    scale_y_continuous(breaks = pretty(befAftPlot$trendValue),
-                       labels = (pretty(befAftPlot$trendValue))) +
-    theme(strip.text.x = element_text(face = "plain", size = 10, colour = "black"),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          axis.text.y = element_text(size = 14),
-          axis.title = element_text(size = 16))
+    theme(strip.text.y = element_text(face = "plain", size = 12, colour = "black",
+                                      angle = 0, hjust = 0),
+          strip.background = element_rect(fill = "white", color = "grey"),
+          panel.grid.minor.x = element_blank(),
+          axis.text.y = element_text(size = 10),
+          axis.title = element_text(size = 16),
+          legend.position = "top")
   # ggsave("figs/02a_BeforeVsAfterEst_best.eps", width = 9.5, height = 6.5, unit = 'in')
 }
 
@@ -161,64 +192,26 @@ tidyBeforeAfter <- beforeAfter %>%
            | trendType == 'trEstHelpPerc'
            | trendType == 'unknownPerc')
   ggplot(helpedHarmedPlot, aes(y = trendValue, x = PARK_TYPE,
-                        fill = factor(trendType,
-                                      levels = c('trEstHarmPerc',
-                                                 'unknownPerc',
-                                                 'trEstHelpPerc'),
-                                      labels = c('Harmed',
-                                                 'Ambiguous',
-                                                 'Helped'),
-                                      ordered = TRUE))) + 
-    geom_bar(stat="identity", position = "stack", width=0.6) +
-    facet_wrap(~factor(pairId)+TR_EST, labeller = label_value) +
-    scale_fill_brewer(palette="Spectral") +
+                               fill = factor(trendType,
+                                             levels = c('trEstHarmPerc',
+                                                        'unknownPerc',
+                                                        'trEstHelpPerc'),
+                                             labels = c('Harmed',
+                                                        'Ambiguous',
+                                                        'Helped'),
+                                             ordered = TRUE))) + 
+    geom_bar(stat = "identity", position = "stack", width = 0.6) +
+    facet_grid(cluster+pairId ~ ., labeller = label_value) +
+    scale_fill_brewer(palette = "Spectral") +
     theme_light() + coord_flip() +
-    labs(title = "Vegetation change: HELPED vs. HARMED by Tiger Reserve establishment",
-         caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
-         fill = "Effect of\nTR establishment") +
-    xlab("Protection Level\n") + ylab("\nArea (%)") +
-    theme(strip.text.x = element_text(face = "plain", size = 10, colour = "black"),
-          panel.grid.major = element_blank(),
+    labs(fill = "Effect of\nTR establishment",
+         y = "Area (%)", x = "") +
+    theme(strip.text.y = element_text(face = "plain", size = 12, colour = "black",
+                                      angle = 0, hjust = 0),
+          strip.background = element_rect(fill = "white", color = "grey"),
           panel.grid.minor = element_blank(),
-          axis.text.y = element_text(size = 14),
-          axis.title = element_text(size = 16))
+          axis.text.y = element_text(size = 10),
+          axis.title = element_text(size = 16),
+          legend.position = "top")
   # ggsave("figs/03_HelpedVsHarmed.eps", width = 9.5, height = 6.5, unit = 'in')
-}
-
-# "Helped v/s Harmed" (Fig 3) ALT 1---------------------------------------------
-{
-  tidyBeforeAfter %>%
-    filter(trendType == 'trEstHarmPerc'
-           | trendType == 'trEstHelpPerc') %>%
-    ggplot(aes(x = PARK_TYPE, y = trendValue,
-               fill = factor(trendType,
-                             levels = c('trEstHarmPerc',
-                                        # 'unknownPerc',
-                                        'trEstHelpPerc'),
-                             labels = c('Harmed',
-                                        # 'Unknown',
-                                        'Helped')))) +
-    geom_bar(stat = "identity", position = "dodge", width = 0.7) +
-    geom_text(aes(x = PARK_TYPE, y = trendValue + 5,
-                  label = format(trendValue, digits=0)),
-              position = position_dodge(width=0.7),
-              size = 4, color = rgb(100,100,100, maxColorValue=255)) +
-    facet_wrap(~factor(pairId)+TR_EST, labeller = label_value, scale = "free_x") +
-    xlab("Protection Level\n") + ylab("\nArea (%)") +
-    scale_fill_manual(values = c("#E69F00", "#009E73")) +
-    # scale_fill_brewer(palette="Spectral") +
-    coord_flip() + #geom_hline(yintercept = 0) +
-    scale_y_continuous(limits = c(0, 50),
-                       breaks = c(0, 25, 50),
-                       labels = c(0, 25, 50)) +
-    theme_light() +
-    labs(title = "Vegetation change: HELPED vs. HARMED by Tiger Reserve establishment",
-         caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
-         fill = "Effect of\nTR establishment") +
-    theme(strip.text.x = element_text(face = "plain", size = 10, colour = "black"),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          axis.text.y = element_text(size = 14),
-          axis.title = element_text(size = 16))
-  # ggsave("figs/03_HelpedVsHarmed_alt1.eps", width = 9.5, height = 6.5, unit = 'in')
 }
