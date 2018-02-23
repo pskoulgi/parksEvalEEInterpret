@@ -7,7 +7,7 @@ after <- read.table("../data/VegTrendsAftEst_SummStats_FinalCutComp_PAsTRsNamesF
                     as.is = T, header = T, sep = ",")
 beforeAfter <- read.table("../data/VegTrendsBefAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_1d29517fe56d642688fd0e60c2fc3380.csv",
                           as.is = T, header = T, sep = ",")
-minValidDataPerc = 75
+minValidDataPerc = 80
 
 # after <- read.table("../data/VegTrendsAftEst_SummStats_VegAreaOnly_412f62749a505abf77d0899469840d79.csv",
 #                     as.is = T, header = T, sep = ",")
