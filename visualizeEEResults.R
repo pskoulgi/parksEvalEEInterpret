@@ -108,7 +108,7 @@ tidyBeforeAfter <- beforeAfter %>%
   ggtern(afterComp,
          aes(x = unknownPercAft, y = declinePercAft, z = improvePercAft,
              group = pairId, shape = PARK_TYPE)) +
-    geom_point(aes(color = pairId, size = 3)) +
+    geom_point(aes(color = pairId), size = 3) +
     geom_line(aes(color = pairId),linetype = 3) +
     facet_grid(.~cluster) +
     scale_L_continuous(breaks = seq(0, 1, 0.5),
