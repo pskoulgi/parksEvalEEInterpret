@@ -220,6 +220,37 @@ tidyBeforeAfter <- beforeAfter %>%
           axis.title = element_text(size = 16),
           legend.position = "top")
   # ggsave("figs/02a_BeforeVsAfterEst_best.eps", width = 9.5, height = 6.5, unit = 'in')
+  
+  beforeAfterComp <- befAftPlot %>% spread(trend, trendValue)
+  ggtern(beforeAfterComp, aes(x = unknownPerc, y = declinePerc, z = improvePerc,
+             shape = interaction(PARK_TYPE,epoch))) +
+    geom_point(aes(color = pairId), size = 3) +
+    geom_line(aes(group = interaction(pairId, epoch), color = pairId),linetype = 3) +
+    facet_grid(.~cluster) +
+    scale_L_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_R_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_T_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_shape_manual(values = c(1, 19, 0, 15)) +
+    labs(x = "Unknown", y = "Decline", z = "Improve", 
+         shape = "Protection", color = "PA pairs") + percent_custom("%") +
+    theme_custom(col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
+                 col.grid.minor = "gray95",
+                 tern.panel.background = element_rect(colour = "white")) +
+    theme(tern.axis.arrow.show = TRUE,
+          axis.title = element_blank(),
+          tern.axis.arrow.text = element_text(size = 14, vjust = -0.5),
+          tern.axis.arrow.text.R = element_text(vjust = 1),
+          legend.text = element_text(color = "black", size = 12),
+          legend.title = element_text(color = "black", size = 14),
+          legend.key = element_rect(fill = "white")) +
+    guides(size=FALSE, # color=FALSE, 
+           shape = guide_legend(override.aes = list(size = 3)))
 }
 
 # "Helped v/s Harmed" (Fig 3) --------------------------------------------------
@@ -251,4 +282,35 @@ tidyBeforeAfter <- beforeAfter %>%
           axis.title = element_text(size = 16),
           legend.position = "top")
   # ggsave("figs/03_HelpedVsHarmed.eps", width = 9.5, height = 6.5, unit = 'in')
+  
+  helpedHarmedComp <- helpedHarmedPlot %>% spread(trendType, trendValue)
+  ggtern(helpedHarmedComp, aes(x = unknownPerc, y = trEstHarmPerc, z = trEstHelpPerc,
+                               shape = PARK_TYPE)) +
+    geom_point(aes(color = pairId), size = 3) +
+    geom_line(aes(group = pairId, color = pairId),linetype = 3) +
+    facet_grid(.~cluster) +
+    scale_L_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_R_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_T_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_shape_manual(values = c(1, 19, 0, 15)) +
+    labs(x = "Unknown", y = "Harmed", z = "Helped", 
+         shape = "Protection", color = "PA pairs") + percent_custom("%") +
+    theme_custom(col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
+                 col.grid.minor = "gray95",
+                 tern.panel.background = element_rect(colour = "white")) +
+    theme(tern.axis.arrow.show = TRUE,
+          axis.title = element_blank(),
+          tern.axis.arrow.text = element_text(size = 14, vjust = -0.5),
+          tern.axis.arrow.text.R = element_text(vjust = 1),
+          legend.text = element_text(color = "black", size = 12),
+          legend.title = element_text(color = "black", size = 14),
+          legend.key = element_rect(fill = "white")) +
+    guides(size=FALSE, # color=FALSE, 
+           shape = guide_legend(override.aes = list(size = 3)))
 }
