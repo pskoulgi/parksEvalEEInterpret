@@ -20,12 +20,16 @@ states = c('Uttar Pradesh', 'Uttarakhand', 'Rajasthan', 'Maharashtra',
            'Bihar', 'Chattisgarh', 'Orissa', 'Andhra Pradesh', 'Jharkhand',
            'Karnataka', 'Kerala', 'Tamil Nadu', 
            'Arunachal Pradesh', 'Assam', 'Mizoram', 'West Bengal');
-clusterNum = c('Cluster I', 'Cluster I', 'Cluster I', 'Cluster I',
-           'Cluster II',
-           'Cluster III', 'Cluster III', 'Cluster III', 'Cluster III', 'Cluster III',
-           'Cluster IV', 'Cluster IV', 'Cluster IV',
-           'Cluster V', 'Cluster V', 'Cluster V', 'Cluster V')
-landscapeClus = data.frame(state = states, cluster = factor(clusterNum))
+clusterName = c('Shivalik - Central India', 'Shivalik - Central India',
+                      'Shivalik - Central India', 'Shivalik - Central India',
+           'Central India',
+           'Shivalik - Eastern Ghats', 'Shivalik - Eastern Ghats',
+                'Shivalik - Eastern Ghats', 'Shivalik - Eastern Ghats', 
+                'Shivalik - Eastern Ghats',
+           'Western Ghats', 'Western Ghats', 'Western Ghats',
+           'North East Hills', 'North East Hills', 'North East Hills', 
+                'North East Hills')
+landscapeClus = data.frame(state = states, cluster = factor(clusterName))
 # fix protection label for non-TRs
 after[which(after[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
 beforeAfter[which(beforeAfter[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
