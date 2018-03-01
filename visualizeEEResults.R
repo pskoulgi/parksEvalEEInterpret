@@ -4,10 +4,13 @@ library(ggplot2)
 library(ggtern)
 
 # Data import & wrangling -----------------------------------------------------
-after <- read.table("../data/VegTrendsAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_ffe94bd0702acb43d191ddc87bab10ad.csv",
-                    as.is = T, header = T, sep = ",")
-beforeAfter <- read.table("../data/VegTrendsBefAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_1d29517fe56d642688fd0e60c2fc3380.csv",
-                          as.is = T, header = T, sep = ",")
+allData <- read.table("../data/VegTrends_SummStats_5ab4e232625ae322c14fe49ad7789c28.csv",
+                      as.is = T, header = T, sep = ",")
+
+# after <- read.table("../data/VegTrendsAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_ffe94bd0702acb43d191ddc87bab10ad.csv",
+#                     as.is = T, header = T, sep = ",")
+# beforeAfter <- read.table("../data/VegTrendsBefAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_1d29517fe56d642688fd0e60c2fc3380.csv",
+#                           as.is = T, header = T, sep = ",")
 minValidDataPerc = 80
 
 # after <- read.table("../data/VegTrendsAftEst_SummStats_VegAreaOnly_412f62749a505abf77d0899469840d79.csv",
@@ -31,12 +34,13 @@ clusterName = c('Shivalik - Central India', 'Shivalik - Central India',
                 'North East Hills')
 landscapeClus = data.frame(state = states, cluster = factor(clusterName))
 # fix protection label for non-TRs
-after[which(after[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
-beforeAfter[which(beforeAfter[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
+allData[which(after[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
+# after[which(after[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
+# beforeAfter[which(beforeAfter[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
 
 # generate ids for TR-Non-TR pairs -- for grouping.
 # pair id factor labels are "TRName - Non-TRName"
-trNonTRpairCodes <- after %>% filter(PARK_TYPE == "TR") %>%
+trNonTRpairCodes <- allData %>% filter(PARK_TYPE == "TR") %>%
   select(c('NAME', 'trNonTRPair')) %>%
   mutate(pairId = paste(NAME, trNonTRPair, sep = " :: ")) %>%
   # rearrange so each each park <-> id coupling is there
@@ -44,22 +48,24 @@ trNonTRpairCodes <- after %>% filter(PARK_TYPE == "TR") %>%
   select(-pairType)
 
 # tidy data for percentage plotting grouped and faceted
-tidyAfter <- after %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
+tidyAfter <- allData %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
   filter(validDataPercAft > minValidDataPerc) %>%
+  select(-contains('Bef')) %>% 
+  select(-contains('Help')) %>% select(-contains('Harm')) %>%
   mutate(unknownPercAft = 100 - improvePercAft - declinePercAft) %>%
   gather(trendType, trendValue, c('declinePercAft', 'improvePercAft',
                                   'unknownPercAft',
                                   'declineAft_sqm', 'improveAft_sqm',
                                   'validDataAft_sqm', 'validDataPercAft')) %>%
-  right_join(trNonTRpairCodes, by = "NAME") %>%
-  right_join(landscapeClus, by = c("STATE" = "state"))
-afterComp <- after %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
+  right_join(trNonTRpairCodes, . , by = "NAME") %>%
+  right_join(landscapeClus, . , by = c("state" = "STATE"))
+afterComp <- allData %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
   filter(validDataPercAft > minValidDataPerc) %>%
   mutate(unknownPercAft = 100 - improvePercAft - declinePercAft) %>%
   right_join(trNonTRpairCodes, . , by = "NAME") %>%
   right_join(landscapeClus, . , by = c("state" = "STATE"))
 
-tidyBeforeAfter <- beforeAfter %>%
+tidyBeforeAfter <- allData %>%
   filter(validDataPercAft > minValidDataPerc &
            validDataPercBef > minValidDataPerc) %>%
   mutate(unknownPercAft = 100 - improvePercAft - declinePercAft) %>%
@@ -77,7 +83,7 @@ tidyBeforeAfter <- beforeAfter %>%
                                   'trEstHelped_sqm', 'trEstHelpPerc',
                                   'unknownPerc')) %>%
   right_join(trNonTRpairCodes, . , by = "NAME") %>%
-  right_join(landscapeClus, by = c("STATE" = "state"))
+  right_join(landscapeClus, . , by = c("state" = "STATE"))
 
 # "After Established" (Table/Fig 1) --------------------------------------------
 {
