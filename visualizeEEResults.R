@@ -118,9 +118,9 @@ tidyBeforeAfter <- allData %>%
   ggtern(afterComp,
          aes(x = unknownPercAft, y = declinePercAft, z = improvePercAft,
              group = pairId, shape = PARK_TYPE)) +
-    geom_point(aes(color = pairId), size = 3) +
+    geom_point(aes(color = pairId), size = 2) +
     geom_line(aes(color = pairId),linetype = 3) +
-    facet_grid(.~cluster) +
+    facet_grid(cluster ~ . , switch = "y") +
     scale_L_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
@@ -138,13 +138,14 @@ tidyBeforeAfter <- allData %>%
                  tern.panel.background = element_rect(colour = "white")) +
     theme(tern.axis.arrow.show = TRUE,
           axis.title = element_blank(),
-          tern.axis.arrow.text = element_text(size = 14, vjust = -0.5),
+          tern.axis.arrow.text = element_text(size = 10, vjust = -0.5),
           tern.axis.arrow.text.R = element_text(vjust = 1),
           legend.text = element_text(color = "black", size = 12),
           legend.title = element_text(color = "black", size = 14),
           legend.key = element_rect(fill = "white")) +
     guides(size=FALSE, color=FALSE, 
            shape = guide_legend(override.aes = list(size = 3)))
+  # ggsave("08.eps", width = 300, height = 400, units = 'mm')
 }
 
 # "After Established" (Table/Fig 1) --------------------------------------------
