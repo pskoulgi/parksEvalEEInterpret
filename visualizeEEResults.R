@@ -1,6 +1,7 @@
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(compositions)
 library(ggtern)
 
 # Data import & wrangling -----------------------------------------------------
@@ -446,4 +447,86 @@ tidyBeforeAfter <- allData %>%
     filter(abs(helpDiff) > 15 | abs(harmDiff) > 15) %>%
     filter(helpDiff < 0 & harmDiff > 0) %>%
     group_by(cluster) %>% summarize(n())
+}
+
+# "After" and "Helped v/s Harmed" comp diff plots (Fig 4) ----------------------
+{
+  pairIdsAft <- afterComp %>% filter(PARK_TYPE == "Non-TR") %>%
+    arrange(pairId) %>% select(pairId)
+  ntrsAft_comp <- afterComp %>% select(pairId, PARK_TYPE, 
+                                       improvePercAft, 
+                                       declinePercAft, 
+                                       unknownPercAft) %>%
+    filter(PARK_TYPE == "Non-TR") %>% arrange(pairId) %>% 
+    select(improvePercAft, declinePercAft, unknownPercAft) %>%
+    acomp(total = 100)
+  trsAft_comp  <- afterComp %>% select(pairId, PARK_TYPE, 
+                                       improvePercAft, 
+                                       declinePercAft, 
+                                       unknownPercAft) %>%
+    filter(PARK_TYPE == "TR") %>% arrange(pairId) %>% 
+    select(improvePercAft, declinePercAft, unknownPercAft) %>%
+    acomp(total = 100)
+  diffsAft_comp = alr(trsAft_comp - ntrsAft_comp)
+  diffsAft_df <- data.frame(diffsAft_comp[,1],
+                            diffsAft_comp[,2],
+                            pairIdsAft)
+  colnames(diffsAft_df)[1:2] <- c(substr(names(diffsAft_comp)[1], 1, 4),
+                                  substr(names(diffsAft_comp)[2], 1, 4))
+  diffsAft_df <- diffsAft_df %>% 
+    mutate(diffAft_mag = sqrt(impr*impr + decl*decl))
+  
+  ggplot(diffsAft_df, aes(x = (impr), y = (decl), color = pairId)) +
+    geom_point(size = 2, show.legend = FALSE) +
+    # geom_text(data = arrange(diffsAft_df, desc(diffAft_mag)) %>% head(3),
+    #           aes(label = pairId), nudge_y = 0.3, show.legend = FALSE) +
+    theme_light() + coord_equal() + #xlim(c(0,4.5)) +
+    theme(panel.grid = element_blank(),
+          panel.border = element_blank(),
+          axis.line = element_line("gray50"),
+          line = element_line("gray50"),
+          text = element_text(size = 10)) +
+    labs(x = "| TR - Non TR improvement |", 
+         y = "| TR - Non TR decline |")
+  # ggsave("15.svg", width = 70, height = 60, units = 'mm')
+  
+  pairIdsHlpHrm <- helpedHarmedComp %>% filter(PARK_TYPE == "Non-TR") %>%
+    arrange(pairId) %>% select(pairId)
+  ntrsHelpHarm_comp <- helpedHarmedComp %>% select(pairId, PARK_TYPE, 
+                                       trEstHelpPerc, 
+                                       trEstHarmPerc, 
+                                       unknownPerc) %>%
+    filter(PARK_TYPE == "Non-TR") %>% arrange(pairId) %>% 
+    select(trEstHelpPerc, trEstHarmPerc, unknownPerc) %>%
+    acomp(total = 100)
+  trsHelpHarm_comp <- helpedHarmedComp %>% select(pairId, PARK_TYPE, 
+                                                   trEstHelpPerc, 
+                                                   trEstHarmPerc, 
+                                                   unknownPerc) %>%
+    filter(PARK_TYPE == "TR") %>% arrange(pairId) %>% 
+    select(trEstHelpPerc, trEstHarmPerc, unknownPerc) %>%
+    acomp(total = 100)
+  diffsHlpHrm_comp = alr(trsHelpHarm_comp - ntrsHelpHarm_comp)
+  diffsHlpHrm_df <- data.frame(diffsHlpHrm_comp[,1],
+                               diffsHlpHrm_comp[,2],
+                               pairIdsHlpHrm)
+  colnames(diffsHlpHrm_df)[1:2] <- c(substr(names(diffsHlpHrm_comp)[1], 6, 9),
+                                  substr(names(diffsHlpHrm_comp)[2], 6, 9))
+  diffsHlpHrm_df <- diffsHlpHrm_df %>% 
+    mutate(diffHlpHrm_mag = sqrt(Harm*Harm + Help*Help))
+  
+  ggplot(diffsHlpHrm_df, aes(x = (Help), y = (Harm), color = pairId)) +
+    geom_point(size = 2, show.legend = FALSE) +
+    # geom_text(data = arrange(diffsHlpHrm_df, desc(diffHlpHrm_mag)) %>% head(4),
+    #           aes(label = pairId), show.legend = FALSE) +
+    # geom_text(aes(label = pairId), show.legend = FALSE) +
+    theme_light() + coord_equal() +
+    theme(panel.grid = element_blank(),
+          panel.border = element_blank(),
+          axis.line = element_line("gray50"),
+          line = element_line("gray50"),
+          text = element_text(size = 10)) +
+    labs(x = "| TR - Non TR help |", 
+         y = "| TR - Non TR harm |")
+  # ggsave("try4.svg", width = 70, height = 60, units = 'mm')
 }
