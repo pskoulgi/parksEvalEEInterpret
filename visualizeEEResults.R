@@ -35,7 +35,7 @@ clusterName = c('Shivalik - Central India', 'Shivalik - Central India',
                 'North East Hills')
 landscapeClus = data.frame(state = states, cluster = factor(clusterName))
 # fix protection label for non-TRs
-allData[which(after[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
+allData[which(allData[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
 # after[which(after[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
 # beforeAfter[which(beforeAfter[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
 
@@ -203,19 +203,22 @@ tidyBeforeAfter <- allData %>%
     scale_shape_manual(values = c(1, 19)) +
     labs(x = "Unknown", y = "Decline", z = "Improve", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
-    theme_custom(col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
-                 col.grid.minor = "gray95",
-                 tern.panel.background = element_rect(colour = "white")) +
+    # theme_custom(col.R = "gray50", col.T = "gray50", col.L = "gray50",
+    #              #col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
+    #              col.grid.minor = "gray95",
+    #              tern.panel.background = element_rect(colour = "white")) +
+    theme_light() + #theme_nogrid() +
     theme(tern.axis.arrow.show = TRUE,
           axis.title = element_blank(),
           tern.axis.arrow.text = element_text(size = 10, vjust = -0.5),
           tern.axis.arrow.text.R = element_text(vjust = 1),
-          legend.text = element_text(color = "black", size = 12),
-          legend.title = element_text(color = "black", size = 14),
+          # panel.grid.major = element_blank(),
+          legend.text = element_text(color = "black", size = 10),
+          legend.title = element_text(color = "black", size = 10),
           legend.key = element_rect(fill = "white")) +
     guides(size=FALSE, color=FALSE, 
-           shape = guide_legend(override.aes = list(size = 3)))
-  # ggsave("08.eps", width = 300, height = 400, units = 'mm')
+           shape = guide_legend(override.aes = list(size = 2)))
+  # ggsave("try1.svg", width = 120, height = 400, units = 'mm')
 }
 
 # "After Established" (Table/Fig 1) --------------------------------------------
@@ -305,9 +308,9 @@ tidyBeforeAfter <- allData %>%
   beforeAfterComp <- befAftPlot %>% spread(trend, trendValue)
   ggtern(beforeAfterComp, aes(x = unknownPerc, y = declinePerc, z = improvePerc,
              shape = interaction(PARK_TYPE,epoch))) +
-    geom_point(aes(color = pairId), size = 3) +
+    geom_point(aes(color = pairId), size = 2) +
     geom_line(aes(group = interaction(pairId, epoch), color = pairId),linetype = 3) +
-    facet_grid(.~cluster) +
+    facet_grid(cluster ~ . , switch = "y") +
     scale_L_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
@@ -325,13 +328,14 @@ tidyBeforeAfter <- allData %>%
                  tern.panel.background = element_rect(colour = "white")) +
     theme(tern.axis.arrow.show = TRUE,
           axis.title = element_blank(),
-          tern.axis.arrow.text = element_text(size = 14, vjust = -0.5),
+          tern.axis.arrow.text = element_text(size = 10, vjust = -0.5),
           tern.axis.arrow.text.R = element_text(vjust = 1),
-          legend.text = element_text(color = "black", size = 12),
-          legend.title = element_text(color = "black", size = 14),
+          legend.text = element_text(color = "black", size = 10),
+          legend.title = element_text(color = "black", size = 10),
           legend.key = element_rect(fill = "white")) +
     guides(size=FALSE, # color=FALSE, 
-           shape = guide_legend(override.aes = list(size = 3)))
+           shape = guide_legend(override.aes = list(size = 2)))
+  # ggsave("try2.svg", width = 120, height = 400, units = 'mm')
 }
 
 # "Helped v/s Harmed" (Fig 3) --------------------------------------------------
@@ -367,9 +371,9 @@ tidyBeforeAfter <- allData %>%
   helpedHarmedComp <- helpedHarmedPlot %>% spread(trendType, trendValue)
   ggtern(helpedHarmedComp, aes(x = unknownPerc, y = trEstHarmPerc, z = trEstHelpPerc,
                                shape = PARK_TYPE)) +
-    geom_point(aes(color = pairId), size = 3) +
+    geom_point(aes(color = pairId), size = 2) +
     geom_line(aes(group = pairId, color = pairId),linetype = 3) +
-    facet_grid(.~cluster) +
+    facet_grid(cluster ~ . , switch = "y") +
     scale_L_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
@@ -382,18 +386,20 @@ tidyBeforeAfter <- allData %>%
     scale_shape_manual(values = c(1, 19, 0, 15)) +
     labs(x = "Unknown", y = "Harmed", z = "Helped", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
-    theme_custom(col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
-                 col.grid.minor = "gray95",
-                 tern.panel.background = element_rect(colour = "white")) +
+    # theme_custom(col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
+    #              col.grid.minor = "gray95",
+    #              tern.panel.background = element_rect(colour = "white")) +
+    theme_light() +
     theme(tern.axis.arrow.show = TRUE,
           axis.title = element_blank(),
-          tern.axis.arrow.text = element_text(size = 14, vjust = -0.5),
+          tern.axis.arrow.text = element_text(size = 10, vjust = -0.5),
           tern.axis.arrow.text.R = element_text(vjust = 1),
-          legend.text = element_text(color = "black", size = 12),
-          legend.title = element_text(color = "black", size = 14),
+          legend.text = element_text(color = "black", size = 10),
+          legend.title = element_text(color = "black", size = 10),
           legend.key = element_rect(fill = "white")) +
-    guides(size=FALSE, # color=FALSE, 
-           shape = guide_legend(override.aes = list(size = 3)))
+    guides(size=FALSE, color=FALSE, 
+           shape = guide_legend(override.aes = list(size = 2)))
+  # ggsave("try3.svg", width = 120, height = 300, units = 'mm')
   helpedHarmedComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
     filter(trEstHelpPerc > 25) %>% summarise(n())
   afterComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
