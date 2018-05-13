@@ -185,12 +185,36 @@ tidyBeforeAfter <- allData %>%
     filter(imprDiff > 0 & declDiff > 0) %>%
     group_by(cluster) %>% summarize(n())
     
-  ggtern(afterComp,
+  decline.col = "#31a354"
+  improve.col = "#d95f0e"
+  unknown.col = "grey"
+  theme_ternPlots = 
+    theme_custom(col.R = decline.col, col.T = improve.col, col.L = unknown.col,
+                 # col.R = "#31a354", col.T = "#d95f0e", col.L = "grey",
+                 # col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
+                 col.grid.minor = "gray90",
+                 tern.panel.background = element_rect(colour = "white")) +
+    # theme_light() + #theme_nogrid() +
+    theme(tern.axis.arrow.show = TRUE,
+          axis.title = element_blank(),
+          axis.text = element_text(size = 12),
+          strip.text = element_text(size = 12),
+          tern.axis.arrow.text = element_text(size = 14, vjust = -0.5),
+          tern.axis.arrow.text.R = element_text(vjust = 0.9, lineheight = 2),
+          tern.axis.line = element_line(size = 1),
+          tern.panel.grid.minor = element_line(size = 0.5),
+          tern.panel.grid.major = element_line(linetype = 8),
+          # panel.grid.major = element_blank(),
+          legend.text = element_text(color = "black", size = 10),
+          legend.title = element_text(color = "black", size = 10),
+          legend.key = element_rect(fill = "white")) 
+  ggtern(filter(afterComp, cluster == "Shivalik - Central India"),
          aes(x = unknownPercAft, y = declinePercAft, z = improvePercAft,
              group = pairId, shape = PARK_TYPE)) +
-    geom_point(aes(color = pairId), size = 2) +
+    geom_point(aes(color = pairId), size = 3.5) +
     geom_line(aes(color = pairId),linetype = 3) +
-    facet_grid(cluster ~ . , switch = "y") +
+    # facet_grid(cluster ~ . , switch = "y") +
+    facet_grid(. ~ cluster) +
     scale_L_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
@@ -201,24 +225,110 @@ tidyBeforeAfter <- allData %>%
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(1, 19)) +
+    scale_color_brewer(type = 'qual', palette = "Dark2") +
+    labs(x = "Unknown (%)", y = "Decline (%)", z = "Improve (%)", 
+         shape = "Protection", color = "PA pairs") + #percent_custom("%") +
+    guides(color=FALSE, shape = FALSE) +
+    theme_ternPlots
+  # ggsave("figs/SCI_after_withlegend_bigFont.svg", width = 170, height = 100, units = 'mm')
+  # ggsave("figs/SCI_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
+  ggtern(filter(afterComp, cluster == "Western Ghats"),
+         aes(x = unknownPercAft, y = declinePercAft, z = improvePercAft,
+             group = pairId, shape = PARK_TYPE)) +
+    geom_point(aes(color = pairId), size = 3.5) +
+    geom_line(aes(color = pairId),linetype = 3) +
+    # facet_grid(cluster ~ . , switch = "y") +
+    facet_grid(. ~ cluster) +
+    scale_L_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_R_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_T_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_shape_manual(values = c(1, 19)) +
+    scale_color_brewer(type = 'qual', palette = "Dark2") +
     labs(x = "Unknown", y = "Decline", z = "Improve", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
-    # theme_custom(col.R = "gray50", col.T = "gray50", col.L = "gray50",
-    #              #col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
-    #              col.grid.minor = "gray95",
-    #              tern.panel.background = element_rect(colour = "white")) +
-    theme_light() + #theme_nogrid() +
-    theme(tern.axis.arrow.show = TRUE,
-          axis.title = element_blank(),
-          tern.axis.arrow.text = element_text(size = 10, vjust = -0.5),
-          tern.axis.arrow.text.R = element_text(vjust = 1),
-          # panel.grid.major = element_blank(),
-          legend.text = element_text(color = "black", size = 10),
-          legend.title = element_text(color = "black", size = 10),
-          legend.key = element_rect(fill = "white")) +
-    guides(size=FALSE, color=FALSE, 
-           shape = guide_legend(override.aes = list(size = 2)))
-  # ggsave("try1.svg", width = 120, height = 400, units = 'mm')
+    guides(size=FALSE, color=FALSE, shape = FALSE) +
+    theme_ternPlots
+  # ggsave("figs/WG_after_withlegend_bigFont.svg", width = 180, height = 100, units = 'mm')
+  # ggsave("figs/WG_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
+  ggtern(filter(afterComp, cluster == "North East Hills"),
+         aes(x = unknownPercAft, y = declinePercAft, z = improvePercAft,
+             group = pairId, shape = PARK_TYPE)) +
+    geom_point(aes(color = pairId), size = 3.5) +
+    geom_line(aes(color = pairId),linetype = 3) +
+    # facet_grid(cluster ~ . , switch = "y") +
+    facet_grid(. ~ cluster) +
+    scale_L_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_R_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_T_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_shape_manual(values = c(1, 19)) +
+    scale_color_brewer(type = 'qual', palette = "Dark2") +
+    labs(x = "Unknown", y = "Decline", z = "Improve", 
+         shape = "Protection", color = "PA pairs") + percent_custom("%") +
+    guides(size=FALSE, color=FALSE, shape = FALSE)  +
+    theme_ternPlots
+  # ggsave("figs/NEH_after_withlegend_bigFont.svg", width = 150, height = 100, units = 'mm')
+  # ggsave("figs/NEH_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
+  ggtern(filter(afterComp, cluster == "Shivalik - Eastern Ghats"),
+         aes(x = unknownPercAft, y = declinePercAft, z = improvePercAft,
+             group = pairId, shape = PARK_TYPE)) +
+    geom_point(aes(color = pairId), size = 3.5) +
+    geom_line(aes(color = pairId),linetype = 3) +
+    # facet_grid(cluster ~ . , switch = "y") +
+    facet_grid(. ~ cluster) +
+    scale_L_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_R_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_T_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_shape_manual(values = c(1, 19)) +
+    scale_color_brewer(type = 'qual', palette = "Dark2") +
+    labs(x = "Unknown", y = "Decline", z = "Improve", 
+         shape = "Protection", color = "PA pairs") + percent_custom("%") +
+    guides(size=FALSE, color=FALSE, shape = FALSE) +
+    theme_ternPlots
+  # ggsave("figs/SEG_after_withlegend_bigFont.svg", width = 220, height = 100, units = 'mm')
+  # ggsave("figs/SEG_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
+  ggtern(filter(afterComp, cluster == "Central India"),
+         aes(x = unknownPercAft, y = declinePercAft, z = improvePercAft,
+             group = pairId, shape = PARK_TYPE)) +
+    geom_point(aes(color = pairId), size = 3.5) +
+    geom_line(aes(color = pairId),linetype = 3) +
+    # facet_grid(cluster ~ . , switch = "y") +
+    facet_grid(. ~ cluster) +
+    scale_L_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_R_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_T_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_shape_manual(values = c(1, 19)) +
+    scale_color_brewer(type = 'qual', palette = "Dark2") +
+    labs(x = "Unknown (%)", y = "Decline (%)", z = "Improve (%)", 
+         shape = "Protection", color = "PA pairs") + #percent_custom("%") +
+    guides(size=FALSE, color=FALSE, shape = FALSE) +
+    theme_ternPlots
+  # ggsave("figs/CI_after_withlegend_bigFont.svg", width = 170, height = 100, units = 'mm')
+  # ggsave("figs/CI_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
+  
 }
 
 # "After Established" (Table/Fig 1) --------------------------------------------
@@ -369,11 +479,12 @@ tidyBeforeAfter <- allData %>%
   # ggsave("figs/03_HelpedVsHarmed.eps", width = 9.5, height = 6.5, unit = 'in')
   
   helpedHarmedComp <- helpedHarmedPlot %>% spread(trendType, trendValue)
-  ggtern(helpedHarmedComp, aes(x = unknownPerc, y = trEstHarmPerc, z = trEstHelpPerc,
+  ggtern(filter(helpedHarmedComp, cluster == "Central India"),
+         aes(x = unknownPerc, y = trEstHarmPerc, z = trEstHelpPerc,
                                shape = PARK_TYPE)) +
-    geom_point(aes(color = pairId), size = 2) +
+    geom_point(aes(color = pairId), size = 3.5) +
     geom_line(aes(group = pairId, color = pairId),linetype = 3) +
-    facet_grid(cluster ~ . , switch = "y") +
+    facet_grid(. ~ cluster) +
     scale_L_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
@@ -384,22 +495,59 @@ tidyBeforeAfter <- allData %>%
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(1, 19, 0, 15)) +
+    scale_color_brewer(type = "qual", palette = "Dark2") +
+    labs(x = "Unknown (%)", y = "Harmed (%)", z = "Helped (%)", 
+         shape = "Protection", color = "PA pairs") + #percent_custom("%") +
+    guides(size=FALSE, color=FALSE, shape = FALSE) +
+    theme_ternPlots
+  # ggsave("figs/CI_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
+  # ggsave("figs/CI_helpharm_withlegend.svg", width = 160, height = 100, units = 'mm')
+  ggtern(filter(helpedHarmedComp, cluster == "Shivalik - Central India"),
+         aes(x = unknownPerc, y = trEstHarmPerc, z = trEstHelpPerc,
+             shape = PARK_TYPE)) +
+    geom_point(aes(color = pairId), size = 3.5) +
+    geom_line(aes(group = pairId, color = pairId),linetype = 3) +
+    facet_grid(. ~ cluster) +
+    scale_L_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_R_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_T_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_shape_manual(values = c(1, 19, 0, 15)) +
+    scale_color_brewer(type = "qual", palette = "Dark2") +
     labs(x = "Unknown", y = "Harmed", z = "Helped", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
-    # theme_custom(col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
-    #              col.grid.minor = "gray95",
-    #              tern.panel.background = element_rect(colour = "white")) +
-    theme_light() +
-    theme(tern.axis.arrow.show = TRUE,
-          axis.title = element_blank(),
-          tern.axis.arrow.text = element_text(size = 10, vjust = -0.5),
-          tern.axis.arrow.text.R = element_text(vjust = 1),
-          legend.text = element_text(color = "black", size = 10),
-          legend.title = element_text(color = "black", size = 10),
-          legend.key = element_rect(fill = "white")) +
-    guides(size=FALSE, color=FALSE, 
-           shape = guide_legend(override.aes = list(size = 2)))
-  # ggsave("try3.svg", width = 120, height = 300, units = 'mm')
+    guides(size=FALSE, color=FALSE, shape = FALSE) +
+    theme_ternPlots
+  # ggsave("figs/SCI_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
+  # ggsave("figs/SCI_helpharm_withlegend.svg", width = 180, height = 100, units = 'mm')
+  ggtern(filter(helpedHarmedComp, cluster == "North East Hills"),
+         aes(x = unknownPerc, y = trEstHarmPerc, z = trEstHelpPerc,
+             shape = PARK_TYPE)) +
+    geom_point(aes(color = pairId), size = 3.5) +
+    geom_line(aes(group = pairId, color = pairId),linetype = 3) +
+    facet_grid(. ~ cluster) +
+    scale_L_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_R_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_T_continuous(breaks = seq(0, 1, 0.5),
+                       labels = c("0", "50", "100"),
+                       minor_breaks = c(0.25, 0.75)) +
+    scale_shape_manual(values = c(1, 19, 0, 15)) +
+    scale_color_brewer(type = "qual", palette = "Dark2") +
+    labs(x = "Unknown", y = "Harmed", z = "Helped", 
+         shape = "Protection", color = "PA pairs") + percent_custom("%") +
+    guides(size=FALSE, color=FALSE, shape = FALSE) +
+    theme_ternPlots
+  # ggsave("figs/NEH_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
+  # ggsave("figs/NEH_helpharm_withlegend.svg", width = 140, height = 100, units = 'mm')
   helpedHarmedComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
     filter(trEstHelpPerc > 25) %>% summarise(n())
   afterComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
