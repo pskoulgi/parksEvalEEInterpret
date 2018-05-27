@@ -93,7 +93,7 @@ tidyBeforeAfter <- allData %>%
            | trendType == 'improvePercAft'
            | trendType == 'unknownPercAft') %>%
     separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
-  ggplot(afterPlot, aes(y = trendValue, x = PARK_TYPE,
+  ggplot(afterPlot, aes(y = trendValue, x = NAME,
                         fill = factor(trend,
                                       levels = c('declinePerc',
                                                  'unknownPerc',
@@ -107,14 +107,14 @@ tidyBeforeAfter <- allData %>%
     scale_fill_brewer(palette = "Spectral", type = 'qual') +
     theme_light() + coord_flip() +
     labs(fill = "Directional change", x = "", y = "Area (%)") +
-    theme(strip.text.y = element_text(face = "plain", size = 14, 
+    theme(strip.text.y = element_text(face = "plain", #size = 14, 
                                       colour = "black", angle = 0, hjust = 0),
           strip.background = element_rect(fill = "white", color = "grey"),
           panel.grid.minor = element_blank(),
-          axis.text.y = element_text(size = 12),
-          axis.title = element_text(size = 16),
+          axis.text.y = element_text(size = 7),
+          # axis.title = element_text(size = 16),
           legend.position = "top")
-  # ggsave("figs/01_AfterEst.eps", width = 9, height = 11, unit = 'in')
+  # ggsave("figs/01_AfterEst_barstry.svg", width = 250, height = 200, unit = 'mm')
   
   afterComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
     filter(improvePercAft > 50) %>% summarise(n())
@@ -454,29 +454,36 @@ tidyBeforeAfter <- allData %>%
     filter(trendType == 'trEstHarmPerc'
            | trendType == 'trEstHelpPerc'
            | trendType == 'unknownPerc')
-  ggplot(helpedHarmedPlot, aes(y = trendValue, x = PARK_TYPE,
+  helpedHarmedPlot2 <- helpedHarmedPlot %>%
+    mutate(parkType_Name = paste(PARK_TYPE, NAME, sep = "_"))
+  helped.col = "#31a354"
+  harmed.col = "#d95f0e"
+  unclear.col = "grey"
+  ggplot(helpedHarmedPlot2, aes(y = trendValue, x = parkType_Name,
                                fill = factor(trendType,
                                              levels = c('trEstHarmPerc',
                                                         'unknownPerc',
                                                         'trEstHelpPerc'),
                                              labels = c('Harmed',
-                                                        'Ambiguous',
+                                                        'Unclear',
                                                         'Helped'),
                                              ordered = TRUE))) + 
     geom_bar(stat = "identity", position = "stack", width = 0.6) +
-    facet_grid(cluster+pairId ~ ., labeller = label_value) +
-    scale_fill_brewer(palette = "Spectral") +
+    facet_grid(cluster+pairId ~ ., labeller = label_value, scales = "free") +
+    # scale_fill_brewer(palette = "Spectral") +
+    scale_fill_manual(values = c(harmed.col, unclear.col, helped.col)) +
+    scale_x_discrete(breaks = helpedHarmedPlot2$parkType_Name, labels = helpedHarmedPlot2$NAME) + 
     theme_light() + coord_flip() +
-    labs(fill = "Effect of\nTR establishment",
+    labs(fill = "",
          y = "Area (%)", x = "") +
-    theme(strip.text.y = element_text(face = "plain", size = 12, colour = "black",
+    theme(strip.text.y = element_text(face = "plain", colour = "black",
                                       angle = 0, hjust = 0),
           strip.background = element_rect(fill = "white", color = "grey"),
           panel.grid.minor = element_blank(),
-          axis.text.y = element_text(size = 10),
-          axis.title = element_text(size = 16),
+          axis.text.y = element_text(size = 7),
+          # axis.title = element_text(size = 16),
           legend.position = "top")
-  # ggsave("figs/03_HelpedVsHarmed.eps", width = 9.5, height = 6.5, unit = 'in')
+  # ggsave("figs/03_HelpedVsHarmed.svg", width = 250, height = 100, unit = 'mm')
   
   helpedHarmedComp <- helpedHarmedPlot %>% spread(trendType, trendValue)
   ggtern(filter(helpedHarmedComp, cluster == "Central India"),
