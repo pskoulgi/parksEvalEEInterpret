@@ -226,7 +226,7 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(1, 19)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
-    labs(x = "Unknown (%)", y = "Decline (%)", z = "Improve (%)", 
+    labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
          shape = "Protection", color = "PA pairs") + #percent_custom("%") +
     guides(color=FALSE, shape = FALSE) +
     theme_ternPlots
@@ -250,7 +250,7 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(1, 19)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
-    labs(x = "Unknown", y = "Decline", z = "Improve", 
+    labs(x = "Unclear", y = "Decline", z = "Improve", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots
@@ -274,7 +274,7 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(1, 19)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
-    labs(x = "Unknown", y = "Decline", z = "Improve", 
+    labs(x = "Unclear", y = "Decline", z = "Improve", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE)  +
     theme_ternPlots
@@ -298,7 +298,7 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(1, 19)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
-    labs(x = "Unknown", y = "Decline", z = "Improve", 
+    labs(x = "Unclear", y = "Decline", z = "Improve", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots
@@ -322,7 +322,7 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(1, 19)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
-    labs(x = "Unknown (%)", y = "Decline (%)", z = "Improve (%)", 
+    labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
          shape = "Protection", color = "PA pairs") + #percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots
@@ -496,7 +496,7 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(1, 19, 0, 15)) +
     scale_color_brewer(type = "qual", palette = "Dark2") +
-    labs(x = "Unknown (%)", y = "Harmed (%)", z = "Helped (%)", 
+    labs(x = "Unclear (%)", y = "Harmed (%)", z = "Helped (%)", 
          shape = "Protection", color = "PA pairs") + #percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots
@@ -519,7 +519,7 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(1, 19, 0, 15)) +
     scale_color_brewer(type = "qual", palette = "Dark2") +
-    labs(x = "Unknown", y = "Harmed", z = "Helped", 
+    labs(x = "Unclear", y = "Harmed", z = "Helped", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots
@@ -542,7 +542,7 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(1, 19, 0, 15)) +
     scale_color_brewer(type = "qual", palette = "Dark2") +
-    labs(x = "Unknown", y = "Harmed", z = "Helped", 
+    labs(x = "Unclear", y = "Harmed", z = "Helped", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots
