@@ -93,7 +93,10 @@ tidyBeforeAfter <- allData %>%
            | trendType == 'improvePercAft'
            | trendType == 'unknownPercAft') %>%
     separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
-  ggplot(afterPlot, aes(y = trendValue, x = NAME,
+  afterPlot2 <- afterPlot %>%
+    mutate(parkType_Name = paste(TR_EST, PARK_TYPE, NAME, sep = "_")) %>%
+    mutate(pairIdYr = paste(TR_EST, pairId, sep = "_"))
+  ggplot(afterPlot2, aes(y = trendValue, x = parkType_Name,
                         fill = factor(trend,
                                       levels = c('declinePerc',
                                                  'unknownPerc',
@@ -103,8 +106,9 @@ tidyBeforeAfter <- allData %>%
                                                  'Improve'),
                                       ordered = TRUE))) + 
     geom_bar(stat = "identity", position = "stack", width = 0.6) +
-    facet_grid(cluster+pairId ~ ., scales = "free", space = "free") +
+    facet_grid(cluster+pairIdYr ~ ., scales = "free", space = "free") +
     scale_fill_brewer(palette = "Spectral", type = 'qual') +
+    scale_x_discrete(breaks = afterPlot2$parkType_Name, labels = afterPlot2$NAME) + 
     theme_light() + coord_flip() +
     labs(fill = "Directional change", x = "", y = "Area (%)") +
     theme(strip.text.y = element_text(face = "plain", #size = 14, 
@@ -189,7 +193,8 @@ tidyBeforeAfter <- allData %>%
   improve.col = "#d95f0e"
   unknown.col = "grey"
   theme_ternPlots = 
-    theme_custom(col.R = decline.col, col.T = improve.col, col.L = unknown.col,
+    theme_custom(# col.R = decline.col, col.T = improve.col, col.L = unknown.col,
+                 col.R = "#91cf60", col.T = "#fc8d59", col.L = "#ffffbf",
                  # col.R = "#31a354", col.T = "#d95f0e", col.L = "grey",
                  # col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
                  col.grid.minor = "gray90",
@@ -455,7 +460,8 @@ tidyBeforeAfter <- allData %>%
            | trendType == 'trEstHelpPerc'
            | trendType == 'unknownPerc')
   helpedHarmedPlot2 <- helpedHarmedPlot %>%
-    mutate(parkType_Name = paste(PARK_TYPE, NAME, sep = "_"))
+    mutate(parkType_Name = paste(PARK_TYPE, TR_EST, NAME, sep = "_")) %>%
+    mutate(pairIdYr = paste(TR_EST, pairId, sep = "_"))
   helped.col = "#31a354"
   harmed.col = "#d95f0e"
   unclear.col = "grey"
@@ -469,7 +475,7 @@ tidyBeforeAfter <- allData %>%
                                                         'Helped'),
                                              ordered = TRUE))) + 
     geom_bar(stat = "identity", position = "stack", width = 0.6) +
-    facet_grid(cluster+pairId ~ ., labeller = label_value, scales = "free") +
+    facet_grid(cluster+pairIdYr ~ ., labeller = label_value, scales = "free") +
     # scale_fill_brewer(palette = "Spectral") +
     scale_fill_manual(values = c(harmed.col, unclear.col, helped.col)) +
     scale_x_discrete(breaks = helpedHarmedPlot2$parkType_Name, labels = helpedHarmedPlot2$NAME) + 
