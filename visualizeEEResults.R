@@ -563,9 +563,9 @@ tidyBeforeAfter <- allData %>%
   # ggsave("figs/NEH_helpharm_withlegend.svg", width = 140, height = 100, units = 'mm')
   helpedHarmedComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
     filter(trEstHelpPerc > 25) %>% summarise(n())
-  afterComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
+  helpedHarmedComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
     filter(trEstHarmPerc > 25) %>% summarise(n())
-  afterComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
+  helpedHarmedComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
     filter(trEstHarmPerc > 50) %>% summarise(n())
   helpChange <- helpedHarmedComp %>% 
     select(cluster, pairId, PARK_TYPE, trEstHelpPerc) %>%
