@@ -5,8 +5,12 @@ library(compositions)
 library(ggtern)
 
 # Data import & wrangling -----------------------------------------------------
-allData <- read.table("../data/VegTrends_SummStats_5ab4e232625ae322c14fe49ad7789c28.csv",
+# TR - WLS pairs
+allData <- read.table("../data/VegTrends_SummStats_TRWLS_9d1022b86b16709003c3da422acfedc8.csv",
                       as.is = T, header = T, sep = ",")
+# TR - nonTR pairs
+# allData <- read.table("../data/VegTrends_SummStats_5ab4e232625ae322c14fe49ad7789c28.csv",
+#                       as.is = T, header = T, sep = ",")
 
 # after <- read.table("../data/VegTrendsAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_ffe94bd0702acb43d191ddc87bab10ad.csv",
 #                     as.is = T, header = T, sep = ",")
@@ -42,8 +46,10 @@ allData[which(allData[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
 # generate ids for TR-Non-TR pairs -- for grouping.
 # pair id factor labels are "TRName - Non-TRName"
 trNonTRpairCodes <- allData %>% filter(PARK_TYPE == "TR") %>%
-  select(c('NAME', 'trNonTRPair')) %>%
-  mutate(pairId = paste(NAME, trNonTRPair, sep = " :: ")) %>%
+  select(c('NAME', 'trWLSPair')) %>%
+  mutate(pairId = paste(NAME, trWLSPair, sep = " :: ")) %>%
+  # select(c('NAME', 'trNonTRPair')) %>%
+  # mutate(pairId = paste(NAME, trNonTRPair, sep = " :: ")) %>%
   # rearrange so each each park <-> id coupling is there
   gather(key = pairType, value = NAME, -pairId) %>% 
   select(-pairType)
