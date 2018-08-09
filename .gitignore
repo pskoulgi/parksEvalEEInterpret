@@ -8,3 +8,5 @@ figs
 *.png
 
 *.pdf
+
+visualizeEEResults_bkup\.R
