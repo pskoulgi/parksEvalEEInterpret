@@ -201,7 +201,7 @@ tidyBeforeAfter <- allData %>%
     filter(abs(imprDiff) < 15 & abs(declDiff) < 15) %>% 
     group_by(cluster) %>% summarize(n())
     
-  theme_ternPlots = 
+  theme_ternPlots_imprdecl = 
     theme_custom(col.R = improvePerc.col, col.T = declinePerc.col, col.L = unknownPerc.col,
                  col.grid.minor = "gray90",
                  tern.panel.background = element_rect(colour = "white")) +
@@ -238,7 +238,7 @@ tidyBeforeAfter <- allData %>%
     labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
          shape = "Protection", color = "PA pairs") + 
     guides(color=FALSE, shape = FALSE) +
-    theme_ternPlots
+    theme_ternPlots_imprdecl
   # ggsave("figs/SCI_after_withlegend_bigFont.svg", width = 170, height = 100, units = 'mm')
   # ggsave("figs/SCI_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   ggtern(filter(afterComp, cluster == "Western Ghats"),
@@ -259,10 +259,10 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
-    labs(x = "Unclear", y = "Decline", z = "Improve", 
-         shape = "Protection", color = "PA pairs") + percent_custom("%") +
+    labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
+         shape = "Protection", color = "PA pairs") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
-    theme_ternPlots
+    theme_ternPlots_imprdecl
   # ggsave("figs/WG_after_withlegend_bigFont.svg", width = 180, height = 100, units = 'mm')
   # ggsave("figs/WG_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   
@@ -284,10 +284,10 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
-    labs(x = "Unclear", y = "Decline", z = "Improve", 
-         shape = "Protection", color = "PA pairs") + percent_custom("%") +
+    labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
+         shape = "Protection", color = "PA pairs") +
     guides(size=FALSE, color=FALSE, shape = FALSE)  +
-    theme_ternPlots
+    theme_ternPlots_imprdecl
   # ggsave("figs/NEH_after_withlegend_bigFont.svg", width = 150, height = 100, units = 'mm')
   # ggsave("figs/NEH_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   ggtern(filter(afterComp, cluster == "Shivalik - Eastern Ghats"),
@@ -308,10 +308,10 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
-    labs(x = "Unclear", y = "Decline", z = "Improve", 
-         shape = "Protection", color = "PA pairs") + percent_custom("%") +
+    labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
+         shape = "Protection", color = "PA pairs") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
-    theme_ternPlots
+    theme_ternPlots_imprdecl
   # ggsave("figs/SEG_after_withlegend_bigFont.svg", width = 220, height = 100, units = 'mm')
   # ggsave("figs/SEG_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   
@@ -336,7 +336,7 @@ tidyBeforeAfter <- allData %>%
     labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
          shape = "Protection", color = "PA pairs") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
-    theme_ternPlots
+    theme_ternPlots_imprdecl
   # ggsave("figs/CI_after_withlegend_bigFont.svg", width = 170, height = 100, units = 'mm')
   # ggsave("figs/CI_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   
@@ -443,8 +443,8 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = "qual", palette = "Dark2") +
-    labs(x = "Unclear", y = "Harmed", z = "Helped", 
-         shape = "Protection", color = "PA pairs") + percent_custom("%") +
+    labs(x = "Unclear (%)", y = "Harmed (%)", z = "Helped (%)", 
+         shape = "Protection", color = "PA pairs") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots_helpharm
   # ggsave("figs/SCI_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
@@ -466,8 +466,8 @@ tidyBeforeAfter <- allData %>%
                        minor_breaks = c(0.25, 0.75)) +
     scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = "qual", palette = "Dark2") +
-    labs(x = "Unclear", y = "Harmed", z = "Helped", 
-         shape = "Protection", color = "PA pairs") + percent_custom("%") +
+    labs(x = "Unclear (%)", y = "Harmed (%)", z = "Helped (%)", 
+         shape = "Protection", color = "PA pairs") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots_helpharm
   # ggsave("figs/NEH_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
