@@ -165,6 +165,14 @@ tidyBeforeAfter <- allData %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter(imprDiff < 0 & declDiff > 0) %>%
     group_by(cluster) %>% summarize(n())
+  afterComp %>% 
+    select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
+    spread(PARK_TYPE, declinePercAft) %>% 
+    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
+    mutate(declDiff = TR - NonTR) %>% select(pairId, declDiff) %>%
+    right_join(imprChange, ., by = "pairId") %>%
+    filter((imprDiff > 0 & declDiff > 0) | (imprDiff < 0 & declDiff < 0)) %>%
+    group_by(cluster) %>% summarize(n())
   # posRespAmongSignfPosResp <- afterComp %>% 
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
@@ -202,6 +210,14 @@ tidyBeforeAfter <- allData %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter(abs(imprDiff) > 15 | abs(declDiff) > 15) %>% 
     filter(imprDiff > 0 & declDiff > 0) %>%
+    group_by(cluster) %>% summarize(n())
+  afterComp %>% 
+    select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
+    spread(PARK_TYPE, declinePercAft) %>% 
+    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
+    mutate(declDiff = TR - NonTR) %>% select(pairId, declDiff) %>%
+    right_join(imprChange, ., by = "pairId") %>%
+    filter(abs(imprDiff) < 15 & abs(declDiff) < 15) %>% 
     group_by(cluster) %>% summarize(n())
     
   # decline.col = "#31a354"
@@ -635,6 +651,15 @@ tidyBeforeAfter <- allData %>%
     select(cluster, pairId, TR, NonTR = "Non-TR") %>%
     mutate(harmDiff = TR - NonTR) %>% select(pairId, harmDiff) %>%
     right_join(helpChange, ., by = "pairId") %>%
+    filter((helpDiff > 0 & harmDiff > 0) | (helpDiff < 0 & harmDiff < 0)) %>%
+    group_by(cluster) %>% summarize(n())
+  
+  helpedHarmedComp %>% 
+    select(cluster, pairId, PARK_TYPE, trEstHarmPerc) %>%
+    spread(PARK_TYPE, trEstHarmPerc) %>% 
+    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
+    mutate(harmDiff = TR - NonTR) %>% select(pairId, harmDiff) %>%
+    right_join(helpChange, ., by = "pairId") %>%
     filter(abs(helpDiff) > 15 | abs(harmDiff) > 15) %>%
     group_by(cluster) %>% summarize(n())
   helpedHarmedComp %>% 
@@ -654,6 +679,14 @@ tidyBeforeAfter <- allData %>%
     right_join(helpChange, ., by = "pairId") %>%
     filter(abs(helpDiff) > 15 | abs(harmDiff) > 15) %>%
     filter(helpDiff < 0 & harmDiff > 0) %>%
+    group_by(cluster) %>% summarize(n())
+  helpedHarmedComp %>% 
+    select(cluster, pairId, PARK_TYPE, trEstHarmPerc) %>%
+    spread(PARK_TYPE, trEstHarmPerc) %>% 
+    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
+    mutate(harmDiff = TR - NonTR) %>% select(pairId, harmDiff) %>%
+    right_join(helpChange, ., by = "pairId") %>%
+    filter(abs(helpDiff) < 15 & abs(harmDiff) < 15) %>%
     group_by(cluster) %>% summarize(n())
 }
 
