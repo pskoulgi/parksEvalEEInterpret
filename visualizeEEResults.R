@@ -102,6 +102,14 @@ tidyBeforeAfter <- allData %>%
   afterPlot2 <- afterPlot %>%
     mutate(parkType_Name = paste(TR_EST, PARK_TYPE, NAME, sep = "_")) %>%
     mutate(pairIdYr = paste(TR_EST, pairId, sep = "_"))
+  # Brewer BrBG div 3 classes
+  declinePerc.col = "#d8b365"
+  unknownPerc.col = "#f5f5f5"
+  improvePerc.col = "#5ab4ac"
+  # Brewer Set2 qual 5 classes
+  # declinePerc.col = "#fc8d62"
+  # unknownPerc.col = "#8da0cb"
+  # improvePerc.col = "#a6d854"
   ggplot(afterPlot2, aes(y = trendValue, x = parkType_Name,
                         fill = factor(trend,
                                       levels = c('declinePerc',
@@ -113,7 +121,8 @@ tidyBeforeAfter <- allData %>%
                                       ordered = TRUE))) + 
     geom_bar(stat = "identity", position = "stack", width = 0.6) +
     facet_grid(cluster+pairIdYr ~ ., scales = "free", space = "free") +
-    scale_fill_brewer(palette = "Spectral", type = 'qual') +
+    # scale_fill_brewer(palette = "Spectral", type = 'qual') +
+    scale_fill_manual(values = c(declinePerc.col, unknownPerc.col, improvePerc.col)) +
     scale_x_discrete(breaks = afterPlot2$parkType_Name, labels = afterPlot2$NAME) + 
     theme_light() + coord_flip() +
     labs(fill = "Directional change", x = "", y = "Area (%)") +
@@ -195,12 +204,13 @@ tidyBeforeAfter <- allData %>%
     filter(imprDiff > 0 & declDiff > 0) %>%
     group_by(cluster) %>% summarize(n())
     
-  decline.col = "#31a354"
-  improve.col = "#d95f0e"
-  unknown.col = "grey"
+  # decline.col = "#31a354"
+  # improve.col = "#d95f0e"
+  # unknown.col = "grey"
   theme_ternPlots = 
     theme_custom(# col.R = decline.col, col.T = improve.col, col.L = unknown.col,
-                 col.R = "#91cf60", col.T = "#fc8d59", col.L = "#ffffbf",
+                 # col.R = "#91cf60", col.T = "#fc8d59", col.L = "#ffffbf",
+                 col.R = improvePerc.col, col.T = declinePerc.col, col.L = unknownPerc.col,
                  # col.R = "#31a354", col.T = "#d95f0e", col.L = "grey",
                  # col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
                  col.grid.minor = "gray90",
@@ -468,9 +478,13 @@ tidyBeforeAfter <- allData %>%
   helpedHarmedPlot2 <- helpedHarmedPlot %>%
     mutate(parkType_Name = paste(PARK_TYPE, TR_EST, NAME, sep = "_")) %>%
     mutate(pairIdYr = paste(TR_EST, pairId, sep = "_"))
-  helped.col = "#31a354"
-  harmed.col = "#d95f0e"
-  unclear.col = "grey"
+  # Brewer PiYG div 3
+  helped.col = "#a1d76a"
+  harmed.col = "#e9a3c9"
+  unclear.col = "#f7f7f7"
+  # helped.col = "#31a354"
+  # harmed.col = "#d95f0e"
+  # unclear.col = "grey"
   ggplot(helpedHarmedPlot2, aes(y = trendValue, x = parkType_Name,
                                fill = factor(trendType,
                                              levels = c('trEstHarmPerc',
@@ -497,6 +511,24 @@ tidyBeforeAfter <- allData %>%
           legend.position = "top")
   # ggsave("figs/03_HelpedVsHarmed.svg", width = 250, height = 100, unit = 'mm')
   
+  theme_ternPlots_helpharm = 
+    theme_custom(col.R = helped.col, col.T = harmed.col, col.L = unclear.col,
+                 col.grid.minor = "gray90",
+                 tern.panel.background = element_rect(colour = "white")) +
+    # theme_light() + #theme_nogrid() +
+    theme(tern.axis.arrow.show = TRUE,
+          axis.title = element_blank(),
+          axis.text = element_text(size = 12),
+          strip.text = element_text(size = 12),
+          tern.axis.arrow.text = element_text(size = 14, vjust = -0.5),
+          tern.axis.arrow.text.R = element_text(vjust = 0.9, lineheight = 2),
+          tern.axis.line = element_line(size = 1),
+          tern.panel.grid.minor = element_line(size = 0.5),
+          tern.panel.grid.major = element_line(linetype = 8),
+          # panel.grid.major = element_blank(),
+          legend.text = element_text(color = "black", size = 10),
+          legend.title = element_text(color = "black", size = 10),
+          legend.key = element_rect(fill = "white")) 
   helpedHarmedComp <- helpedHarmedPlot %>% spread(trendType, trendValue)
   ggtern(filter(helpedHarmedComp, cluster == "Central India"),
          aes(x = unknownPerc, y = trEstHarmPerc, z = trEstHelpPerc,
@@ -518,7 +550,8 @@ tidyBeforeAfter <- allData %>%
     labs(x = "Unclear (%)", y = "Harmed (%)", z = "Helped (%)", 
          shape = "Protection", color = "PA pairs") + #percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
-    theme_ternPlots
+    theme_ternPlots_helpharm
+    # theme_ternPlots
   # ggsave("figs/CI_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   # ggsave("figs/CI_helpharm_withlegend.svg", width = 160, height = 100, units = 'mm')
   ggtern(filter(helpedHarmedComp, cluster == "Shivalik - Central India"),
@@ -541,7 +574,8 @@ tidyBeforeAfter <- allData %>%
     labs(x = "Unclear", y = "Harmed", z = "Helped", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
-    theme_ternPlots
+    theme_ternPlots_helpharm
+    # theme_ternPlots
   # ggsave("figs/SCI_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   # ggsave("figs/SCI_helpharm_withlegend.svg", width = 180, height = 100, units = 'mm')
   ggtern(filter(helpedHarmedComp, cluster == "North East Hills"),
@@ -564,7 +598,8 @@ tidyBeforeAfter <- allData %>%
     labs(x = "Unclear", y = "Harmed", z = "Helped", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
-    theme_ternPlots
+    theme_ternPlots_helpharm
+    # theme_ternPlots
   # ggsave("figs/NEH_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   # ggsave("figs/NEH_helpharm_withlegend.svg", width = 140, height = 100, units = 'mm')
   helpedHarmedComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
