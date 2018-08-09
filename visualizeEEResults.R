@@ -6,11 +6,8 @@ library(ggtern)
 
 # Data import & wrangling -----------------------------------------------------
 # TR - WLS pairs
-allData <- read.table("../data/VegTrends_SummStats_TRWLS_9d1022b86b16709003c3da422acfedc8.csv",
+allData <- read.table("../data/VegTrends_SummStats_comingtogether_6ac33cfdfbb84a1b93f5c386accbad1b.csv",
                       as.is = T, header = T, sep = ",")
-# TR - nonTR pairs
-# allData <- read.table("../data/VegTrends_SummStats_5ab4e232625ae322c14fe49ad7789c28.csv",
-#                       as.is = T, header = T, sep = ",")
 
 minValidDataPerc = 80
 
