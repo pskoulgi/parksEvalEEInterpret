@@ -27,11 +27,11 @@ clusterName = c('Shivalik - Central India', 'Shivalik - Central India',
                 'North East Hills')
 landscapeClus = data.frame(state = states, cluster = factor(clusterName))
 # fix protection label for non-TRs
-allData[which(allData[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
+allData[which(allData[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "WLS"
 
-# generate ids for TR-Non-TR pairs -- for grouping.
-# pair id factor labels are "TRName - Non-TRName"
-trNonTRpairCodes <- allData %>% filter(PARK_TYPE == "TR") %>%
+# generate ids for TR-WLS pairs -- for grouping.
+# pair id factor labels are "TRName - WLSName"
+trWlsPairCodes <- allData %>% filter(PARK_TYPE == "TR") %>%
   select(c('NAME', 'trWLSPair')) %>%
   mutate(pairId = paste(NAME, trWLSPair, sep = " :: ")) %>%
   # rearrange so each each park <-> id coupling is there
@@ -48,12 +48,12 @@ tidyAfter <- allData %>%
                                   'unknownPercAft',
                                   'declineAft_sqm', 'improveAft_sqm',
                                   'validDataAft_sqm', 'validDataPercAft')) %>%
-  right_join(trNonTRpairCodes, . , by = "NAME") %>%
+  right_join(trWlsPairCodes, . , by = "NAME") %>%
   right_join(landscapeClus, . , by = c("state" = "STATE"))
 afterComp <- allData %>%
   filter(validDataPercAft > minValidDataPerc) %>%
   mutate(unknownPercAft = 100 - improvePercAft - declinePercAft) %>%
-  right_join(trNonTRpairCodes, . , by = "NAME") %>%
+  right_join(trWlsPairCodes, . , by = "NAME") %>%
   right_join(landscapeClus, . , by = c("state" = "STATE"))
 
 tidyBeforeAfter <- allData %>%
@@ -73,7 +73,7 @@ tidyBeforeAfter <- allData %>%
                                   'trEstHarmed_sqm', 'trEstHarmPerc',
                                   'trEstHelped_sqm', 'trEstHelpPerc',
                                   'unknownPerc')) %>%
-  right_join(trNonTRpairCodes, . , by = "NAME") %>%
+  right_join(trWlsPairCodes, . , by = "NAME") %>%
   right_join(landscapeClus, . , by = c("state" = "STATE"))
 
 # After declaration (Figure 1) -------------------------------------------------
@@ -124,46 +124,46 @@ tidyBeforeAfter <- allData %>%
   imprChange <- afterComp %>% 
     select(cluster, pairId, PARK_TYPE, improvePercAft) %>%
     spread(PARK_TYPE, improvePercAft) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(imprDiff = TR - NonTR)
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(imprDiff = TR - WLS)
   
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(declDiff = TR - NonTR) %>% select(pairId, declDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(declDiff = TR - WLS) %>% select(pairId, declDiff) %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter(imprDiff > 0 & declDiff < 0) %>%
     group_by(cluster) %>% summarize(n())
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(declDiff = TR - NonTR) %>% select(pairId, declDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(declDiff = TR - WLS) %>% select(pairId, declDiff) %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter(imprDiff < 0 & declDiff > 0) %>%
     group_by(cluster) %>% summarize(n())
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(declDiff = TR - NonTR) %>% select(pairId, declDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(declDiff = TR - WLS) %>% select(pairId, declDiff) %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter((imprDiff > 0 & declDiff > 0) | (imprDiff < 0 & declDiff < 0)) %>%
     group_by(cluster) %>% summarize(n())
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(declDiff = TR - NonTR) %>% select(pairId, declDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(declDiff = TR - WLS) %>% select(pairId, declDiff) %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter(abs(imprDiff) > 15 | abs(declDiff) > 15) %>% 
     group_by(cluster) %>% summarize(n())
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(declDiff = TR - NonTR) %>% select(pairId, declDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(declDiff = TR - WLS) %>% select(pairId, declDiff) %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter(abs(imprDiff) > 15 | abs(declDiff) > 15) %>% 
     filter(imprDiff > 0 & declDiff < 0) %>%
@@ -171,8 +171,8 @@ tidyBeforeAfter <- allData %>%
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(declDiff = TR - NonTR) %>% select(pairId, declDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(declDiff = TR - WLS) %>% select(pairId, declDiff) %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter(abs(imprDiff) > 15 | abs(declDiff) > 15) %>% 
     filter(imprDiff < 0 & declDiff > 0) %>%
@@ -180,8 +180,8 @@ tidyBeforeAfter <- allData %>%
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(declDiff = TR - NonTR) %>% select(pairId, declDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(declDiff = TR - WLS) %>% select(pairId, declDiff) %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter(abs(imprDiff) > 15 | abs(declDiff) > 15) %>% 
     filter(imprDiff > 0 & declDiff > 0) %>%
@@ -189,8 +189,8 @@ tidyBeforeAfter <- allData %>%
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(declDiff = TR - NonTR) %>% select(pairId, declDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(declDiff = TR - WLS) %>% select(pairId, declDiff) %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter(abs(imprDiff) < 15 & abs(declDiff) < 15) %>% 
     group_by(cluster) %>% summarize(n())
@@ -469,29 +469,29 @@ tidyBeforeAfter <- allData %>%
   helpChange <- helpedHarmedComp %>% 
     select(cluster, pairId, PARK_TYPE, trEstHelpPerc) %>%
     spread(PARK_TYPE, trEstHelpPerc) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(helpDiff = TR - NonTR)
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(helpDiff = TR - WLS)
   helpedHarmedComp %>% 
     select(cluster, pairId, PARK_TYPE, trEstHarmPerc) %>%
     spread(PARK_TYPE, trEstHarmPerc) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(harmDiff = TR - NonTR) %>% select(pairId, harmDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(harmDiff = TR - WLS) %>% select(pairId, harmDiff) %>%
     right_join(helpChange, ., by = "pairId") %>%
     filter(helpDiff > 0 & harmDiff < 0) %>%
     group_by(cluster) %>% summarize(n())
   helpedHarmedComp %>% 
     select(cluster, pairId, PARK_TYPE, trEstHarmPerc) %>%
     spread(PARK_TYPE, trEstHarmPerc) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(harmDiff = TR - NonTR) %>% select(pairId, harmDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(harmDiff = TR - WLS) %>% select(pairId, harmDiff) %>%
     right_join(helpChange, ., by = "pairId") %>%
     filter(helpDiff < 0 & harmDiff > 0) %>%
     group_by(cluster) %>% summarize(n())
   helpedHarmedComp %>% 
     select(cluster, pairId, PARK_TYPE, trEstHarmPerc) %>%
     spread(PARK_TYPE, trEstHarmPerc) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(harmDiff = TR - NonTR) %>% select(pairId, harmDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(harmDiff = TR - WLS) %>% select(pairId, harmDiff) %>%
     right_join(helpChange, ., by = "pairId") %>%
     filter((helpDiff > 0 & harmDiff > 0) | (helpDiff < 0 & harmDiff < 0)) %>%
     group_by(cluster) %>% summarize(n())
@@ -499,16 +499,16 @@ tidyBeforeAfter <- allData %>%
   helpedHarmedComp %>% 
     select(cluster, pairId, PARK_TYPE, trEstHarmPerc) %>%
     spread(PARK_TYPE, trEstHarmPerc) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(harmDiff = TR - NonTR) %>% select(pairId, harmDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(harmDiff = TR - WLS) %>% select(pairId, harmDiff) %>%
     right_join(helpChange, ., by = "pairId") %>%
     filter(abs(helpDiff) > 15 | abs(harmDiff) > 15) %>%
     group_by(cluster) %>% summarize(n())
   helpedHarmedComp %>% 
     select(cluster, pairId, PARK_TYPE, trEstHarmPerc) %>%
     spread(PARK_TYPE, trEstHarmPerc) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(harmDiff = TR - NonTR) %>% select(pairId, harmDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(harmDiff = TR - WLS) %>% select(pairId, harmDiff) %>%
     right_join(helpChange, ., by = "pairId") %>%
     filter(abs(helpDiff) > 15 | abs(harmDiff) > 15) %>%
     filter(helpDiff > 0 & harmDiff < 0) %>%
@@ -516,8 +516,8 @@ tidyBeforeAfter <- allData %>%
   helpedHarmedComp %>% 
     select(cluster, pairId, PARK_TYPE, trEstHarmPerc) %>%
     spread(PARK_TYPE, trEstHarmPerc) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(harmDiff = TR - NonTR) %>% select(pairId, harmDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(harmDiff = TR - WLS) %>% select(pairId, harmDiff) %>%
     right_join(helpChange, ., by = "pairId") %>%
     filter(abs(helpDiff) > 15 | abs(harmDiff) > 15) %>%
     filter(helpDiff < 0 & harmDiff > 0) %>%
@@ -525,8 +525,8 @@ tidyBeforeAfter <- allData %>%
   helpedHarmedComp %>% 
     select(cluster, pairId, PARK_TYPE, trEstHarmPerc) %>%
     spread(PARK_TYPE, trEstHarmPerc) %>% 
-    select(cluster, pairId, TR, NonTR = "Non-TR") %>%
-    mutate(harmDiff = TR - NonTR) %>% select(pairId, harmDiff) %>%
+    select(cluster, pairId, TR, WLS) %>%
+    mutate(harmDiff = TR - WLS) %>% select(pairId, harmDiff) %>%
     right_join(helpChange, ., by = "pairId") %>%
     filter(abs(helpDiff) < 15 & abs(harmDiff) < 15) %>%
     group_by(cluster) %>% summarize(n())
@@ -534,13 +534,13 @@ tidyBeforeAfter <- allData %>%
 
 # "After" and "Helped v/s Harmed" comp diff plots (Fig 4) ----------------------
 # {
-#   pairIdsAft <- afterComp %>% filter(PARK_TYPE == "Non-TR") %>%
+#   pairIdsAft <- afterComp %>% filter(PARK_TYPE == "WLS") %>%
 #     arrange(pairId) %>% select(pairId)
 #   ntrsAft_comp <- afterComp %>% select(pairId, PARK_TYPE, 
 #                                        improvePercAft, 
 #                                        declinePercAft, 
 #                                        unknownPercAft) %>%
-#     filter(PARK_TYPE == "Non-TR") %>% arrange(pairId) %>% 
+#     filter(PARK_TYPE == "WLS") %>% arrange(pairId) %>% 
 #     select(improvePercAft, declinePercAft, unknownPercAft) %>%
 #     acomp(total = 100)
 #   trsAft_comp  <- afterComp %>% select(pairId, PARK_TYPE, 
@@ -573,13 +573,13 @@ tidyBeforeAfter <- allData %>%
 #          y = "| TR - Non TR decline |")
 #   # ggsave("15.svg", width = 70, height = 60, units = 'mm')
 #   
-#   pairIdsHlpHrm <- helpedHarmedComp %>% filter(PARK_TYPE == "Non-TR") %>%
+#   pairIdsHlpHrm <- helpedHarmedComp %>% filter(PARK_TYPE == "WLS") %>%
 #     arrange(pairId) %>% select(pairId)
 #   ntrsHelpHarm_comp <- helpedHarmedComp %>% select(pairId, PARK_TYPE, 
 #                                        trEstHelpPerc, 
 #                                        trEstHarmPerc, 
 #                                        unknownPerc) %>%
-#     filter(PARK_TYPE == "Non-TR") %>% arrange(pairId) %>% 
+#     filter(PARK_TYPE == "WLS") %>% arrange(pairId) %>% 
 #     select(trEstHelpPerc, trEstHarmPerc, unknownPerc) %>%
 #     acomp(total = 100)
 #   trsHelpHarm_comp <- helpedHarmedComp %>% select(pairId, PARK_TYPE, 
