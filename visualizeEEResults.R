@@ -12,16 +12,7 @@ allData <- read.table("../data/VegTrends_SummStats_TRWLS_9d1022b86b16709003c3da4
 # allData <- read.table("../data/VegTrends_SummStats_5ab4e232625ae322c14fe49ad7789c28.csv",
 #                       as.is = T, header = T, sep = ",")
 
-# after <- read.table("../data/VegTrendsAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_ffe94bd0702acb43d191ddc87bab10ad.csv",
-#                     as.is = T, header = T, sep = ",")
-# beforeAfter <- read.table("../data/VegTrendsBefAftEst_SummStats_FinalCutComp_PAsTRsNamesFixed_1d29517fe56d642688fd0e60c2fc3380.csv",
-#                           as.is = T, header = T, sep = ",")
 minValidDataPerc = 80
-
-# after <- read.table("../data/VegTrendsAftEst_SummStats_VegAreaOnly_412f62749a505abf77d0899469840d79.csv",
-#                     as.is = T, header = T, sep = ",")
-# beforeAfter <- read.table("../data/VegTrendsBefAftEst_SummStats_VegAreaOnly_2361bdde9abf9fb8b623cb79de810c2f.csv",
-#                           as.is = T, header = T, sep = ",")
 
 states = c('Uttar Pradesh', 'Uttarakhand', 'Rajasthan', 'Maharashtra',
            'Madhya Pradesh',
@@ -40,8 +31,6 @@ clusterName = c('Shivalik - Central India', 'Shivalik - Central India',
 landscapeClus = data.frame(state = states, cluster = factor(clusterName))
 # fix protection label for non-TRs
 allData[which(allData[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
-# after[which(after[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
-# beforeAfter[which(beforeAfter[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
 
 # generate ids for TR-Non-TR pairs -- for grouping.
 # pair id factor labels are "TRName - Non-TRName"
@@ -366,123 +355,6 @@ tidyBeforeAfter <- allData %>%
   # ggsave("figs/CI_after_withlegend_bigFont.svg", width = 170, height = 100, units = 'mm')
   # ggsave("figs/CI_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   
-}
-
-# "After Established" (Table/Fig 1) --------------------------------------------
-{
-  afterPlot <- tidyAfter %>%
-    filter(trendType == 'declinePercAft'
-           | trendType == 'improvePercAft'
-           | trendType == 'unknownPercAft') %>%
-    separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
-  ggplot(afterPlot, aes(y = trendValue, x = pairId,
-                        color = factor(trend,
-                                      levels = c('declinePerc',
-                                                 'unknownPerc',
-                                                 'improvePerc'),
-                                      labels = c('Decline',
-                                                 'Ambiguous',
-                                                 'Improve'),
-                                      ordered = TRUE)
-                        )) + 
-    geom_point(aes(shape = factor(PARK_TYPE)), size = 3,
-               stat = "identity", position = "dodge") +
-    geom_line(linetype = 2) +
-    scale_color_manual(values = c("#fc8d59", "#bdbdbd", "#99d594")) +
-    theme_light() + coord_flip() +
-    labs(title = "Vegetation change AFTER Tiger Reserve establishment",
-         caption = "(Each panel is a Tiger Reserve - Non Tiger Reserve pair)",
-         color = "Directional change",
-         shape = "Protection") +
-    xlab("Protection Level\n") + ylab("\nArea (%)") +
-    theme(strip.text.x = element_text(face = "plain", size = 10, colour = "black"),
-          panel.grid.minor = element_blank(),
-          panel.grid.major.y = element_blank(),
-          axis.text.y = element_text(size = 14),
-          axis.title = element_text(size = 16))
-  # ggsave("figs/01_AfterEst.eps", width = 9, height = 11, unit = 'in')
-}
-
-# "Before v/s After Established" (Fig 2) ---------------------------------------
-{
-  befAftPlot <- tidyBeforeAfter %>%
-    filter(trendType == 'declinePercAft'
-           | trendType == 'improvePercAft'
-           | trendType == 'unknownPercAft'
-           | trendType == 'declinePercBef'
-           | trendType == 'improvePercBef'
-           | trendType == 'unknownPercBef') %>%
-    separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
-  topBarInGroup = 'Bef'
-  bottomBarInGroup = 'Aft'
-  ggplot(data = subset(befAftPlot, epoch == bottomBarInGroup),
-         aes(x = PARK_TYPE, y = trendValue,
-             fill = factor(trend,
-                           levels = c('declinePerc',
-                                      'unknownPerc',
-                                      'improvePerc'),
-                           labels = c('Decline',
-                                      'Ambiguous',
-                                      'Improve'),
-                           ordered = TRUE))) +
-    facet_grid(cluster+pairId ~ ., labeller = label_value) +
-    geom_bar(aes(x = as.numeric(factor(PARK_TYPE)) - 0.2),
-             stat = "identity", position = "stack", width = 0.3) +
-    geom_text(aes(x = as.numeric(factor(PARK_TYPE)) - 0.2,
-                  y = -10, label = bottomBarInGroup, hjust = 0.25),
-              size = 3, color = rgb(100,100,100, maxColorValue = 255)) +
-    geom_bar(data = subset(befAftPlot, epoch == topBarInGroup),
-             aes(x = as.numeric(factor(PARK_TYPE)) + 0.2),
-             stat = "identity", position = "stack", width = 0.3) +
-    geom_text(aes(x = as.numeric(factor(PARK_TYPE)) + 0.2,
-                  y = -10, label = topBarInGroup, hjust = 0.25),
-              size = 3, color = rgb(100,100,100, maxColorValue = 255)) +
-    coord_flip() + theme_light() + scale_fill_brewer(palette = "Spectral") +
-    labs(fill = "Directional change",
-         y = "Area (%)", x = "") +
-    scale_x_continuous(
-      breaks = as.numeric(sort(unique(factor(befAftPlot$PARK_TYPE)))),
-      labels = levels(factor(befAftPlot$PARK_TYPE))) +
-    theme(strip.text.y = element_text(face = "plain", size = 12, colour = "black",
-                                      angle = 0, hjust = 0),
-          strip.background = element_rect(fill = "white", color = "grey"),
-          panel.grid.minor.x = element_blank(),
-          axis.text.y = element_text(size = 10),
-          axis.title = element_text(size = 16),
-          legend.position = "top")
-  # ggsave("figs/02a_BeforeVsAfterEst_best.eps", width = 9.5, height = 6.5, unit = 'in')
-  
-  beforeAfterComp <- befAftPlot %>% spread(trend, trendValue)
-  ggtern(beforeAfterComp, aes(x = unknownPerc, y = declinePerc, z = improvePerc,
-             shape = interaction(PARK_TYPE,epoch))) +
-    geom_point(aes(color = pairId), size = 2) +
-    geom_line(aes(group = interaction(pairId, epoch), color = pairId),linetype = 3) +
-    facet_grid(cluster ~ . , switch = "y") +
-    scale_L_continuous(breaks = seq(0, 1, 0.5),
-                       labels = c("0", "50", "100"),
-                       minor_breaks = c(0.25, 0.75)) +
-    scale_R_continuous(breaks = seq(0, 1, 0.5),
-                       labels = c("0", "50", "100"),
-                       minor_breaks = c(0.25, 0.75)) +
-    scale_T_continuous(breaks = seq(0, 1, 0.5),
-                       labels = c("0", "50", "100"),
-                       minor_breaks = c(0.25, 0.75)) +
-    scale_shape_manual(values = c(1, 19, 0, 15)) +
-    labs(x = "Unknown", y = "Decline", z = "Improve", 
-         shape = "Protection", color = "PA pairs") + percent_custom("%") +
-    theme_custom(col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
-                 col.grid.minor = "gray95",
-                 tern.panel.background = element_rect(colour = "white")) +
-    theme(tern.axis.arrow.show = TRUE,
-          axis.title = element_blank(),
-          tern.axis.arrow.text = element_text(size = 10, vjust = -0.5),
-          tern.axis.arrow.text.R = element_text(vjust = 1),
-          legend.text = element_text(color = "black", size = 10),
-          legend.title = element_text(color = "black", size = 10),
-          legend.key = element_rect(fill = "white")) +
-    guides(size=FALSE, # color=FALSE, 
-           shape = guide_legend(override.aes = list(size = 2)))
-  # ggsave("try2.svg", width = 120, height = 400, units = 'mm')
 }
 
 # "Helped v/s Harmed" (Fig 3) --------------------------------------------------
