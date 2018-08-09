@@ -227,7 +227,7 @@ tidyBeforeAfter <- allData %>%
     scale_T_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
-    scale_shape_manual(values = c(1, 19)) +
+    scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
     labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
          shape = "Protection", color = "PA pairs") + 
@@ -251,7 +251,7 @@ tidyBeforeAfter <- allData %>%
     scale_T_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
-    scale_shape_manual(values = c(1, 19)) +
+    scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
     labs(x = "Unclear", y = "Decline", z = "Improve", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
@@ -276,7 +276,7 @@ tidyBeforeAfter <- allData %>%
     scale_T_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
-    scale_shape_manual(values = c(1, 19)) +
+    scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
     labs(x = "Unclear", y = "Decline", z = "Improve", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
@@ -300,7 +300,7 @@ tidyBeforeAfter <- allData %>%
     scale_T_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
-    scale_shape_manual(values = c(1, 19)) +
+    scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
     labs(x = "Unclear", y = "Decline", z = "Improve", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
@@ -325,7 +325,7 @@ tidyBeforeAfter <- allData %>%
     scale_T_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
-    scale_shape_manual(values = c(1, 19)) +
+    scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
     labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
          shape = "Protection", color = "PA pairs") +
@@ -406,7 +406,7 @@ tidyBeforeAfter <- allData %>%
     scale_T_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
-    scale_shape_manual(values = c(1, 19, 0, 15)) +
+    scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = "qual", palette = "Dark2") +
     labs(x = "Unclear (%)", y = "Harmed (%)", z = "Helped (%)", 
          shape = "Protection", color = "PA pairs") +
@@ -429,7 +429,7 @@ tidyBeforeAfter <- allData %>%
     scale_T_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
-    scale_shape_manual(values = c(1, 19, 0, 15)) +
+    scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = "qual", palette = "Dark2") +
     labs(x = "Unclear", y = "Harmed", z = "Helped", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
@@ -452,7 +452,7 @@ tidyBeforeAfter <- allData %>%
     scale_T_continuous(breaks = seq(0, 1, 0.5),
                        labels = c("0", "50", "100"),
                        minor_breaks = c(0.25, 0.75)) +
-    scale_shape_manual(values = c(1, 19, 0, 15)) +
+    scale_shape_manual(values = c(19, 1)) +
     scale_color_brewer(type = "qual", palette = "Dark2") +
     labs(x = "Unclear", y = "Harmed", z = "Helped", 
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
