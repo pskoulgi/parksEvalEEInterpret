@@ -84,7 +84,13 @@ tidyBeforeAfter <- allData %>%
            | trendType == 'unknownPercAft') %>%
     separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
   afterPlot2 <- afterPlot %>%
-    mutate(parkType_Name = paste(TR_EST, PARK_TYPE, NAME, sep = "_")) %>%
+    # create dummy labels & use to lay out/facet barplots in desired order
+    # i.e., TR top, WLS bottom in each paired barplot
+    #       pairs arranged in chronological order by TR_EST
+    mutate(PARK_TYPE_ID = ifelse(PARK_TYPE == 'TR', 
+                                 paste(1, PARK_TYPE, sep=""), 
+                                 paste(0, PARK_TYPE, sep=""))) %>%
+    mutate(parkType_Name = paste(TR_EST, PARK_TYPE_ID, NAME, sep = "_")) %>%
     mutate(pairIdYr = paste(TR_EST, pairId, sep = "_"))
   # Brewer BrBG div 3 classes
   declinePerc.col = "#d8b365"
@@ -343,7 +349,13 @@ tidyBeforeAfter <- allData %>%
            | trendType == 'trEstHelpPerc'
            | trendType == 'unknownPerc')
   helpedHarmedPlot2 <- helpedHarmedPlot %>%
-    mutate(parkType_Name = paste(PARK_TYPE, TR_EST, NAME, sep = "_")) %>%
+    # create dummy labels & use to lay out/facet barplots in desired order
+    # i.e., TR top, WLS bottom in each paired barplot
+    #       pairs arranged in chronological order by TR_EST
+    mutate(PARK_TYPE_ID = ifelse(PARK_TYPE == 'TR', 
+                                 paste(1, PARK_TYPE, sep=""), 
+                                 paste(0, PARK_TYPE, sep=""))) %>%
+    mutate(parkType_Name = paste(TR_EST, PARK_TYPE_ID, NAME, sep = "_")) %>%
     mutate(pairIdYr = paste(TR_EST, pairId, sep = "_"))
   # Brewer PiYG div 3
   helped.col = "#a1d76a"
