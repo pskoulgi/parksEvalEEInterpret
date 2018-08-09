@@ -34,14 +34,12 @@ allData[which(allData[,"PARK_TYPE"] != "TR"), "PARK_TYPE"] = "Non-TR"
 trNonTRpairCodes <- allData %>% filter(PARK_TYPE == "TR") %>%
   select(c('NAME', 'trWLSPair')) %>%
   mutate(pairId = paste(NAME, trWLSPair, sep = " :: ")) %>%
-  # select(c('NAME', 'trNonTRPair')) %>%
-  # mutate(pairId = paste(NAME, trNonTRPair, sep = " :: ")) %>%
   # rearrange so each each park <-> id coupling is there
   gather(key = pairType, value = NAME, -pairId) %>% 
   select(-pairType)
 
 # tidy data for percentage plotting grouped and faceted
-tidyAfter <- allData %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
+tidyAfter <- allData %>%
   filter(validDataPercAft > minValidDataPerc) %>%
   select(-contains('Bef')) %>% 
   select(-contains('Help')) %>% select(-contains('Harm')) %>%
@@ -52,7 +50,7 @@ tidyAfter <- allData %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
                                   'validDataAft_sqm', 'validDataPercAft')) %>%
   right_join(trNonTRpairCodes, . , by = "NAME") %>%
   right_join(landscapeClus, . , by = c("state" = "STATE"))
-afterComp <- allData %>% #select(-declineAft_sqm, -improveAft_sqm, -State_1) %>%
+afterComp <- allData %>%
   filter(validDataPercAft > minValidDataPerc) %>%
   mutate(unknownPercAft = 100 - improvePercAft - declinePercAft) %>%
   right_join(trNonTRpairCodes, . , by = "NAME") %>%
@@ -78,7 +76,7 @@ tidyBeforeAfter <- allData %>%
   right_join(trNonTRpairCodes, . , by = "NAME") %>%
   right_join(landscapeClus, . , by = c("state" = "STATE"))
 
-# "After Established" (Table/Fig 1) --------------------------------------------
+# After declaration (Figure 1) -------------------------------------------------
 {
   afterPlot <- tidyAfter %>%
     filter(trendType == 'declinePercAft'
@@ -92,10 +90,6 @@ tidyBeforeAfter <- allData %>%
   declinePerc.col = "#d8b365"
   unknownPerc.col = "#f5f5f5"
   improvePerc.col = "#5ab4ac"
-  # Brewer Set2 qual 5 classes
-  # declinePerc.col = "#fc8d62"
-  # unknownPerc.col = "#8da0cb"
-  # improvePerc.col = "#a6d854"
   ggplot(afterPlot2, aes(y = trendValue, x = parkType_Name,
                         fill = factor(trend,
                                       levels = c('declinePerc',
@@ -107,17 +101,15 @@ tidyBeforeAfter <- allData %>%
                                       ordered = TRUE))) + 
     geom_bar(stat = "identity", position = "stack", width = 0.6) +
     facet_grid(cluster+pairIdYr ~ ., scales = "free", space = "free") +
-    # scale_fill_brewer(palette = "Spectral", type = 'qual') +
     scale_fill_manual(values = c(declinePerc.col, unknownPerc.col, improvePerc.col)) +
     scale_x_discrete(breaks = afterPlot2$parkType_Name, labels = afterPlot2$NAME) + 
     theme_light() + coord_flip() +
     labs(fill = "Directional change", x = "", y = "Area (%)") +
-    theme(strip.text.y = element_text(face = "plain", #size = 14, 
+    theme(strip.text.y = element_text(face = "plain",
                                       colour = "black", angle = 0, hjust = 0),
           strip.background = element_rect(fill = "white", color = "grey"),
           panel.grid.minor = element_blank(),
           axis.text.y = element_text(size = 7),
-          # axis.title = element_text(size = 16),
           legend.position = "top")
   # ggsave("figs/01_AfterEst_barstry.svg", width = 250, height = 200, unit = 'mm')
   
@@ -134,7 +126,7 @@ tidyBeforeAfter <- allData %>%
     spread(PARK_TYPE, improvePercAft) %>% 
     select(cluster, pairId, TR, NonTR = "Non-TR") %>%
     mutate(imprDiff = TR - NonTR)
-  # imprDeclChange <- afterComp %>% 
+  
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
@@ -159,7 +151,6 @@ tidyBeforeAfter <- allData %>%
     right_join(imprChange, ., by = "pairId") %>%
     filter((imprDiff > 0 & declDiff > 0) | (imprDiff < 0 & declDiff < 0)) %>%
     group_by(cluster) %>% summarize(n())
-  # posRespAmongSignfPosResp <- afterComp %>% 
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
@@ -177,7 +168,6 @@ tidyBeforeAfter <- allData %>%
     filter(abs(imprDiff) > 15 | abs(declDiff) > 15) %>% 
     filter(imprDiff > 0 & declDiff < 0) %>%
     group_by(cluster) %>% summarize(n())
-  # posRespAmongSignfNegResp <- afterComp %>% 
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
@@ -187,7 +177,6 @@ tidyBeforeAfter <- allData %>%
     filter(abs(imprDiff) > 15 | abs(declDiff) > 15) %>% 
     filter(imprDiff < 0 & declDiff > 0) %>%
     group_by(cluster) %>% summarize(n())
-  # posRespAmongSignfAmbigResp <- afterComp %>% 
   afterComp %>% 
     select(cluster, pairId, PARK_TYPE, declinePercAft) %>%
     spread(PARK_TYPE, declinePercAft) %>% 
@@ -206,18 +195,10 @@ tidyBeforeAfter <- allData %>%
     filter(abs(imprDiff) < 15 & abs(declDiff) < 15) %>% 
     group_by(cluster) %>% summarize(n())
     
-  # decline.col = "#31a354"
-  # improve.col = "#d95f0e"
-  # unknown.col = "grey"
   theme_ternPlots = 
-    theme_custom(# col.R = decline.col, col.T = improve.col, col.L = unknown.col,
-                 # col.R = "#91cf60", col.T = "#fc8d59", col.L = "#ffffbf",
-                 col.R = improvePerc.col, col.T = declinePerc.col, col.L = unknownPerc.col,
-                 # col.R = "#31a354", col.T = "#d95f0e", col.L = "grey",
-                 # col.R = "#69f20a", col.T = "#f48823", col.L = "grey",
+    theme_custom(col.R = improvePerc.col, col.T = declinePerc.col, col.L = unknownPerc.col,
                  col.grid.minor = "gray90",
                  tern.panel.background = element_rect(colour = "white")) +
-    # theme_light() + #theme_nogrid() +
     theme(tern.axis.arrow.show = TRUE,
           axis.title = element_blank(),
           axis.text = element_text(size = 12),
@@ -227,7 +208,6 @@ tidyBeforeAfter <- allData %>%
           tern.axis.line = element_line(size = 1),
           tern.panel.grid.minor = element_line(size = 0.5),
           tern.panel.grid.major = element_line(linetype = 8),
-          # panel.grid.major = element_blank(),
           legend.text = element_text(color = "black", size = 10),
           legend.title = element_text(color = "black", size = 10),
           legend.key = element_rect(fill = "white")) 
@@ -250,7 +230,7 @@ tidyBeforeAfter <- allData %>%
     scale_shape_manual(values = c(1, 19)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
     labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
-         shape = "Protection", color = "PA pairs") + #percent_custom("%") +
+         shape = "Protection", color = "PA pairs") + 
     guides(color=FALSE, shape = FALSE) +
     theme_ternPlots
   # ggsave("figs/SCI_after_withlegend_bigFont.svg", width = 170, height = 100, units = 'mm')
@@ -279,6 +259,7 @@ tidyBeforeAfter <- allData %>%
     theme_ternPlots
   # ggsave("figs/WG_after_withlegend_bigFont.svg", width = 180, height = 100, units = 'mm')
   # ggsave("figs/WG_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
+  
   ggtern(filter(afterComp, cluster == "North East Hills"),
          aes(x = unknownPercAft, y = declinePercAft, z = improvePercAft,
              group = pairId, shape = PARK_TYPE)) +
@@ -327,6 +308,7 @@ tidyBeforeAfter <- allData %>%
     theme_ternPlots
   # ggsave("figs/SEG_after_withlegend_bigFont.svg", width = 220, height = 100, units = 'mm')
   # ggsave("figs/SEG_after_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
+  
   ggtern(filter(afterComp, cluster == "Central India"),
          aes(x = unknownPercAft, y = declinePercAft, z = improvePercAft,
              group = pairId, shape = PARK_TYPE)) +
@@ -346,7 +328,7 @@ tidyBeforeAfter <- allData %>%
     scale_shape_manual(values = c(1, 19)) +
     scale_color_brewer(type = 'qual', palette = "Dark2") +
     labs(x = "Unclear (%)", y = "Decline (%)", z = "Improve (%)", 
-         shape = "Protection", color = "PA pairs") + #percent_custom("%") +
+         shape = "Protection", color = "PA pairs") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots
   # ggsave("figs/CI_after_withlegend_bigFont.svg", width = 170, height = 100, units = 'mm')
@@ -354,7 +336,7 @@ tidyBeforeAfter <- allData %>%
   
 }
 
-# "Helped v/s Harmed" (Fig 3) --------------------------------------------------
+# Change from "before" to "after" (Figure 4) -----------------------------------
 {
   helpedHarmedPlot <- tidyBeforeAfter %>%
     filter(trendType == 'trEstHarmPerc'
@@ -367,9 +349,7 @@ tidyBeforeAfter <- allData %>%
   helped.col = "#a1d76a"
   harmed.col = "#e9a3c9"
   unclear.col = "#f7f7f7"
-  # helped.col = "#31a354"
-  # harmed.col = "#d95f0e"
-  # unclear.col = "grey"
+  
   ggplot(helpedHarmedPlot2, aes(y = trendValue, x = parkType_Name,
                                fill = factor(trendType,
                                              levels = c('trEstHarmPerc',
@@ -381,7 +361,6 @@ tidyBeforeAfter <- allData %>%
                                              ordered = TRUE))) + 
     geom_bar(stat = "identity", position = "stack", width = 0.6) +
     facet_grid(cluster+pairIdYr ~ ., labeller = label_value, scales = "free") +
-    # scale_fill_brewer(palette = "Spectral") +
     scale_fill_manual(values = c(harmed.col, unclear.col, helped.col)) +
     scale_x_discrete(breaks = helpedHarmedPlot2$parkType_Name, labels = helpedHarmedPlot2$NAME) + 
     theme_light() + coord_flip() +
@@ -392,7 +371,6 @@ tidyBeforeAfter <- allData %>%
           strip.background = element_rect(fill = "white", color = "grey"),
           panel.grid.minor = element_blank(),
           axis.text.y = element_text(size = 7),
-          # axis.title = element_text(size = 16),
           legend.position = "top")
   # ggsave("figs/03_HelpedVsHarmed.svg", width = 250, height = 100, unit = 'mm')
   
@@ -400,7 +378,6 @@ tidyBeforeAfter <- allData %>%
     theme_custom(col.R = helped.col, col.T = harmed.col, col.L = unclear.col,
                  col.grid.minor = "gray90",
                  tern.panel.background = element_rect(colour = "white")) +
-    # theme_light() + #theme_nogrid() +
     theme(tern.axis.arrow.show = TRUE,
           axis.title = element_blank(),
           axis.text = element_text(size = 12),
@@ -410,7 +387,6 @@ tidyBeforeAfter <- allData %>%
           tern.axis.line = element_line(size = 1),
           tern.panel.grid.minor = element_line(size = 0.5),
           tern.panel.grid.major = element_line(linetype = 8),
-          # panel.grid.major = element_blank(),
           legend.text = element_text(color = "black", size = 10),
           legend.title = element_text(color = "black", size = 10),
           legend.key = element_rect(fill = "white")) 
@@ -433,10 +409,9 @@ tidyBeforeAfter <- allData %>%
     scale_shape_manual(values = c(1, 19, 0, 15)) +
     scale_color_brewer(type = "qual", palette = "Dark2") +
     labs(x = "Unclear (%)", y = "Harmed (%)", z = "Helped (%)", 
-         shape = "Protection", color = "PA pairs") + #percent_custom("%") +
+         shape = "Protection", color = "PA pairs") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots_helpharm
-    # theme_ternPlots
   # ggsave("figs/CI_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   # ggsave("figs/CI_helpharm_withlegend.svg", width = 160, height = 100, units = 'mm')
   ggtern(filter(helpedHarmedComp, cluster == "Shivalik - Central India"),
@@ -460,7 +435,6 @@ tidyBeforeAfter <- allData %>%
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots_helpharm
-    # theme_ternPlots
   # ggsave("figs/SCI_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   # ggsave("figs/SCI_helpharm_withlegend.svg", width = 180, height = 100, units = 'mm')
   ggtern(filter(helpedHarmedComp, cluster == "North East Hills"),
@@ -484,7 +458,6 @@ tidyBeforeAfter <- allData %>%
          shape = "Protection", color = "PA pairs") + percent_custom("%") +
     guides(size=FALSE, color=FALSE, shape = FALSE) +
     theme_ternPlots_helpharm
-    # theme_ternPlots
   # ggsave("figs/NEH_helpharm_nolegend_bigFont.svg", width = 100, height = 100, units = 'mm')
   # ggsave("figs/NEH_helpharm_withlegend.svg", width = 140, height = 100, units = 'mm')
   helpedHarmedComp %>% filter(PARK_TYPE == 'TR') %>% group_by(cluster) %>%
