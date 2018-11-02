@@ -82,7 +82,7 @@ tidyBeforeAfter <- allData %>%
     filter(trendType == 'declinePercAft'
            | trendType == 'improvePercAft'
            | trendType == 'unknownPercAft') %>%
-    separate(trendType, c('trend', 'epoch'), -4, remove = TRUE)
+    separate(trendType, c('trend', 'epoch'), -3, remove = TRUE)
   afterPlot2 <- afterPlot %>%
     # create dummy labels & use to lay out/facet barplots in desired order
     # i.e., TR top, WLS bottom in each paired barplot
