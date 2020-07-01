@@ -8,7 +8,7 @@ Vegetation condition was analysed and summarized using historical Landsat 5 TM i
 * **Results and code**: [DOI: 10.17632/6jhr4xfs3x.1](https://dx.doi.org/10.17632/6jhr4xfs3x.1)
 
 ## Results and Methods
-Figures were generated using R code in [visualizeEEResults.R](https://github.com/pskoulgi/parksEvalEEInterpret/blob/master/visualizeEEResults.R) and/or finished in Inkscape.
+Figures were generated using R code in [visualizeEEResults.R](https://github.com/pskoulgi/parksEvalEEInterpret/blob/master/visualizeEEResults.R), maps were made in QGIS, and/or finished in Inkscape.
 
 ### After Tiger Reserve Declaration
 ![](afterDecl.png)         |  ![](afterDecl_supplinfo.png)
